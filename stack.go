@@ -1,4 +1,4 @@
-package testgo
+package trygo
 
 import "container/list"
 

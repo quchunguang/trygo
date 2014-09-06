@@ -1,4 +1,4 @@
-package likegui
+package main
 
 import (
 	"fmt"

@@ -2,7 +2,7 @@
    The even package implements a simple library for
    even test.
 */
-package testgo
+package trygo
 
 // Even tests if gaven i is even. Return true for even.
 func Even(i int) bool {

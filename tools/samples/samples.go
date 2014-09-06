@@ -11,7 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/alphazero/Go-Redis"
-	"github.com/quchunguang/testgo"
+	"github.com/quchunguang/trygo"
 	"image"
 	"io"
 	"io/ioutil"
@@ -614,7 +614,7 @@ func walk_postorder_recursive(t *Tree, c chan int) {
 func walk_levelorder_recursive(t *Tree, c chan int) {
 }
 func walk_preorder(t *Tree, c chan int) {
-	s := testgo.NewStack()
+	s := trygo.NewStack()
 	s.Push(t)
 	var h *Tree
 	for !s.Empty() {
@@ -990,7 +990,7 @@ func testpackage() {
 	// % cp even.go $GOPATH/src/example/even
 	// % go build
 	// % go install
-	fmt.Print(testgo.Even(2), testgo.Even(3))
+	fmt.Print(trygo.Even(2), trygo.Even(3))
 }
 func testtest() {
 	// see example/even
@@ -1444,9 +1444,6 @@ func Echo(c net.Conn) {
 }
 
 func testcgo() {
-	testgo.Seed(1)
-	fmt.Println(testgo.Random())
-
 	C.puts(C.CString("Hello, 世界\n"))
 	fmt.Println("hi")
 }
