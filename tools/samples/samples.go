@@ -8,6 +8,7 @@ import "C" // this MUST be single sentence with magic omments above !!!
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/alphazero/Go-Redis"
@@ -1448,6 +1449,41 @@ func testcgo() {
 	fmt.Println("hi")
 }
 
+type Payload struct {
+	Blog Blogs
+}
+type Blogs struct {
+	Id          int
+	User        Users
+	Title       string
+	Description string
+	Modified    string
+	Published   bool
+	Taglist     []string
+}
+type Users struct {
+	Id       int
+	Name     string
+	Username string
+}
+
+func testjson() {
+	u := Users{1001, "qu", "Kevin Qu."}
+	b := Blogs{10010001, u,
+		"Being me", "How to be a president",
+		"2009-03-17T03:53:36Z", true,
+		[]string{"president", "usa", "john", "quincy", "adams"},
+	}
+	p := Payload{b}
+	res, _ := json.MarshalIndent(p, "", "    ")
+	fmt.Print(string(res))
+
+	var pay Payload
+	json.Unmarshal(res, &pay)
+	fmt.Printf("\n\nUsername: %s    Title: %s\n",
+		pay.Blog.User.Username, pay.Blog.Title)
+}
+
 ///////////////
 func main() {
 	// testdefine()
@@ -1518,4 +1554,5 @@ func main() {
 	// uniq()
 	// echoserver()
 	// testcgo()
+	// testjson()
 }

@@ -4,7 +4,7 @@ trygo
 Simple samples of golang witch goals to covers full fealture of golang.
 
 Description
-===========
+-----------
 
 * tools/samples - Many small demos about golang language specification.
 
