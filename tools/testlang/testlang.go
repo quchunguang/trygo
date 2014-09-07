@@ -6,25 +6,14 @@ package main
 */
 import "C" // this MUST be single sentence with magic omments above !!!
 import (
-	"bufio"
 	"bytes"
-	"encoding/json"
-	"flag"
 	"fmt"
-	"github.com/alphazero/Go-Redis"
 	"github.com/quchunguang/trygo"
-	"image"
 	"io"
-	"io/ioutil"
 	"math"
-	"net"
-	"net/http"
 	"os"
-	"os/exec"
 	"reflect"
 	"runtime"
-	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -436,22 +425,6 @@ func testerror() {
 	}
 }
 
-type Hello struct{}
-
-func (h Hello) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello!")
-}
-func testhttpserv() {
-	var h Hello
-	http.ListenAndServe("localhost:4000", h)
-}
-
-func testimage() {
-	m := image.NewRGBA(image.Rect(0, 0, 100, 100))
-	fmt.Println(m.Bounds())
-	fmt.Println(m.At(0, 0).RGBA())
-}
-
 type ErrNegativeSqrt float64
 
 func (e ErrNegativeSqrt) Error() string {
@@ -768,30 +741,6 @@ func teststring() {
 		fmt.Println("r[", i, "]=", r[i], "string=", string(r[i]))
 	}
 }
-
-func testredis() {
-	spec := redis.DefaultSpec().Db(0).Password("")
-	client, err := redis.NewSynchClientWithSpec(spec)
-	if err != nil {
-		fmt.Println("connect error", err)
-		return
-	}
-
-	dbkey := "info"
-	value, err := client.Get(dbkey)
-	if err != nil {
-		fmt.Println("Get error", err)
-		return
-	}
-
-	if value == nil {
-		value := []byte("Hello world!")
-		client.Set(dbkey, value)
-		fmt.Printf("插入数据>%s \n", value)
-	} else {
-		fmt.Printf("接收到数据>%s \n", value)
-	}
-}
 func testtype() {
 	const (
 		A = iota
@@ -820,21 +769,6 @@ dsadsaddsa`
 	fmt.Println(x, y, z)
 }
 
-func testfile() error {
-	name := "test2.go"
-	f, err := os.Open(name)
-	if err != nil {
-		fmt.Println("Error")
-		return err
-	}
-	fileinfo, err := f.Stat()
-	if err != nil {
-		fmt.Println("Error")
-		return err
-	}
-	fmt.Println(fileinfo.Size())
-	return nil
-}
 func testgoto() {
 	i := 0
 Here:
@@ -926,54 +860,6 @@ func exercise_functions() {
 	}
 	fmt.Printf("Average = %v\n", sum/float64(len(d)))
 }
-
-type simplestack struct {
-	i    int
-	data [10]int
-}
-
-func (s *simplestack) push(k int) {
-	if s.i >= 10 {
-		return
-	}
-	s.data[s.i] = k
-	s.i++
-}
-func (s *simplestack) pop() int {
-	if s.i <= 0 {
-		return 0
-	}
-	s.i--
-	return s.data[s.i]
-}
-
-// impletement Stringer interface for print out
-func (s simplestack) String() (ret string) {
-	ret = "["
-	for _, v := range s.data[:s.i] {
-		ret += strconv.Itoa(v)
-		ret += " "
-	}
-	ret += "]"
-	return
-}
-func teststack() {
-	var s simplestack
-	fmt.Println(s)
-	s.push(9)
-	s.push(10)
-	s.push(11)
-	s.push(9)
-	s.push(10)
-	s.push(11)
-	s.push(9)
-	s.push(10)
-	s.push(11)
-	s.push(12)
-	s.push(13)
-	s.pop()
-	fmt.Println(s)
-}
 func printthem(them ...int) {
 	for _, d := range them {
 		fmt.Println(d)
@@ -982,16 +868,6 @@ func printthem(them ...int) {
 func testvararg2() {
 	printthem(1, 4, 5, 7, 4)
 	printthem(1, 2, 4)
-}
-func testpackage() {
-	// 包名是小写的一个单词;不应当有下划线或混合大小写
-	// import bar "bytes"
-	// bar.Buffer()
-	// % mkdir $GOPATH/src/example/even
-	// % cp even.go $GOPATH/src/example/even
-	// % go build
-	// % go install
-	fmt.Print(trygo.Even(2), trygo.Even(3))
 }
 func testtest() {
 	// see example/even
@@ -1172,6 +1048,10 @@ func cheacktype(p I) {
 		// 	fmt.Println("R")
 	}
 }
+
+func g(something interface{}) int {
+	return something.(I).Get()
+}
 func testtype2() {
 	var s S
 	var ps *S
@@ -1182,45 +1062,6 @@ func testtype2() {
 
 	// fmt.Println(g(s))  S are NOT I
 	fmt.Println(g(ps))
-}
-func g(something interface{}) int {
-	return something.(I).Get()
-}
-
-type Sorter interface {
-	Len() int
-	Less(i, j int) bool
-	Swap(i, j int)
-}
-
-////////
-type Xi []int
-type Xs []string
-
-func (p Xi) Len() int               { return len(p) }
-func (p Xi) Less(i int, j int) bool { return p[j] < p[i] }
-func (p Xi) Swap(i int, j int)      { p[i], p[j] = p[j], p[i] }
-
-func (p Xs) Len() int               { return len(p) }
-func (p Xs) Less(i int, j int) bool { return p[j] < p[i] }
-func (p Xs) Swap(i int, j int)      { p[i], p[j] = p[j], p[i] }
-
-func Sort(x Sorter) {
-	for i := 0; i < x.Len()-1; i++ {
-		for j := i + 1; j < x.Len(); j++ {
-			if x.Less(i, j) {
-				x.Swap(i, j)
-			}
-		}
-	}
-}
-func testsort() {
-	ints := Xi{44, 67, 3, 17, 89, 10, 73, 9, 14, 8}
-	strings := Xs{"nut", "ape", "elephant", "zoo", "go"}
-	Sort(ints)
-	fmt.Printf("%v\n", ints)
-	Sort(strings)
-	fmt.Printf("%v\n", strings)
 }
 
 ///////////////
@@ -1277,214 +1118,11 @@ func testgoroutine2() {
 	fmt.Println(gomaxprocs)
 }
 
-func testio() {
-	buf := make([]byte, 1024)
-	f, _ := os.Open("/etc/passwd")
-	defer f.Close()
-	for {
-		n, _ := f.Read(buf)
-		if n == 0 {
-			break
-		}
-		os.Stdout.Write(buf[:n])
-	}
-}
-func testio2() {
-	buf := make([]byte, 1024)
-	f, _ := os.Open("/etc/passwd")
-	defer f.Close()
-
-	r := bufio.NewReader(f)
-	w := bufio.NewWriter(os.Stdout)
-	defer w.Flush()
-	for {
-		n, _ := r.Read(buf)
-		if n == 0 {
-			break
-		}
-		w.Write(buf[0:n])
-	}
-}
-func testio3() {
-	f, _ := os.Open("/etc/passwd")
-	defer f.Close()
-	r := bufio.NewReader(f)
-	s, ok := r.ReadString('\n')
-	if ok == nil {
-		fmt.Println(s)
-	}
-}
-func dnslookup() {
-	dnssec := flag.Bool("dnssec", false, "Request DNSSEC records")
-	port := flag.String("port", "53", "Set the query port")
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [OPTIONS] [name ...]\n", os.Args[0])
-		flag.PrintDefaults()
-	}
-	flag.Parse()
-	if *dnssec {
-	}
-	if *port == "53" {
-
-	}
-}
-func testexec() {
-	cmd := exec.Command("/bin/ls", "-l")
-	// err := cmd.Run()
-	buf, err := cmd.Output()
-	if err != nil {
-		fmt.Println("error exec")
-	}
-	fmt.Print(string(buf))
-}
-
-func testnet() {
-	// conn, e := Dial("tcp", "192.0.32.10:80")
-	// conn, e := Dial("udp", "192.0.32.10:80")
-	// conn, e := Dial("tcp", "[2620:0:2d0:200::10]:80")
-}
-func testhttp() {
-	r, err := http.Get("http://www.baidu.com")
-	if err != nil {
-		fmt.Printf("%s\n", err.Error())
-		return
-	}
-	b, err := ioutil.ReadAll(r.Body)
-	r.Body.Close()
-	if err == nil {
-		fmt.Printf("%s", string(b))
-	}
-}
-
-func psgrp() {
-	ps := exec.Command("ps", "-e", "-opid,ppid,comm")
-	output, _ := ps.Output()
-	child := make(map[int][]int)
-	for i, s := range strings.Split(string(output), "\n") {
-		if i == 0 || len(s) == 0 {
-			continue
-		}
-		f := strings.Fields(s)
-		fp, _ := strconv.Atoi(f[0])
-		fpp, _ := strconv.Atoi(f[1])
-		child[fpp] = append(child[fpp], fp)
-	}
-	schild := make([]int, len(child))
-	i := 0
-	for k, _ := range child {
-		schild[i] = k
-		i++
-	}
-	sort.Ints(schild)
-	for _, ppid := range schild {
-		fmt.Printf("Pid %d has %d child", ppid, len(child[ppid]))
-		if len(child[ppid]) == 1 {
-			fmt.Printf(": %v\n", child[ppid])
-			continue
-		}
-		fmt.Printf("ren: %v\n", child[ppid])
-	}
-}
-
-func wc() {
-	var chars, words, lines int
-	r := bufio.NewReader(os.Stdin)
-	for {
-		switch s, ok := r.ReadString('\n'); true {
-		case ok != nil:
-			fmt.Printf("%d %d %d\n", chars, words, lines)
-			return
-		default:
-			chars += len(s)
-			words += len(strings.Fields(s))
-			lines++
-		}
-	}
-}
-func uniq() {
-	list := []string{"a", "b", "a", "a", "c", "d", "e", "f"}
-	first := list[0]
-	fmt.Printf("%s ", first)
-	for _, v := range list[1:] {
-		if first != v {
-			fmt.Printf("%s ", v)
-			first = v
-		}
-	}
-}
-
-// Usage
-//     $ ./test		    # server side
-//     $ nc 127.0.0.1 8053  # client side
-//     abc
-//     abc
-func echoserver() {
-	l, err := net.Listen("tcp", "127.0.0.1:8053")
-	if err != nil {
-		fmt.Printf("Failure to listen: %s\n", err.Error())
-		return
-	}
-	for {
-		if c, err := l.Accept(); err == nil {
-			go Echo(c)
-		}
-	}
-}
-func Echo(c net.Conn) {
-	defer c.Close()
-	line, err := bufio.NewReader(c).ReadString('\n')
-	if err != nil {
-		fmt.Printf("Failure to read: %s\n", err.Error())
-		return
-	}
-	_, err = c.Write([]byte(line))
-	if err != nil {
-		fmt.Printf("Failure to write: %s\n", err.Error())
-		return
-	}
-}
-
 func testcgo() {
 	C.puts(C.CString("Hello, 世界\n"))
 	fmt.Println("hi")
 }
 
-type Payload struct {
-	Blog Blogs
-}
-type Blogs struct {
-	Id          int
-	User        Users
-	Title       string
-	Description string
-	Modified    string
-	Published   bool
-	Taglist     []string
-}
-type Users struct {
-	Id       int
-	Name     string
-	Username string
-}
-
-func testjson() {
-	u := Users{1001, "qu", "Kevin Qu."}
-	b := Blogs{10010001, u,
-		"Being me", "How to be a president",
-		"2009-03-17T03:53:36Z", true,
-		[]string{"president", "usa", "john", "quincy", "adams"},
-	}
-	p := Payload{b}
-	res, _ := json.MarshalIndent(p, "", "    ")
-	fmt.Print(string(res))
-
-	var pay Payload
-	json.Unmarshal(res, &pay)
-	fmt.Printf("\n\nUsername: %s    Title: %s\n",
-		pay.Blog.User.Username, pay.Blog.Title)
-}
-
-///////////////
 func main() {
 	// testdefine()
 	// testfor()
@@ -1507,8 +1145,6 @@ func main() {
 	// testinterface()
 	// testinterface2()
 	// testerror()
-	// testhttpserv()
-	// testimage()
 	// exercise_error()
 	// exercise_ioreader()
 	// testgoroutine()
@@ -1519,10 +1155,8 @@ func main() {
 	// testchannel5()
 	// exercise_checktree()
 	// exercise_craw()
-	// testredis()
 	// teststring()
 	// testtype()
-	// testfile()
 	// testgoto()
 	// fmt.Println(testdefer())
 	// testvarargs(1, 2, 3)
@@ -1530,29 +1164,15 @@ func main() {
 	// testmap()
 	// testpanic()
 	// exercise_functions()
-	// teststack()
 	// testvararg2()
-	// testpackage()
 	// testtest()
 	// commonpkg()
 	// testpointer()
 	// testcustomtype()
 	// testmap3()
 	// testtype2()
-	// testsort()
 	// testinterface_recurve()
 	// testintrospection()
 	// testgoroutine2()
-	// testio()
-	// testio2()
-	// testio3()
-	// testexec()
-	// testnet()
-	// testhttp()
-	// psgrp()
-	// wc()
-	// uniq()
-	// echoserver()
 	// testcgo()
-	// testjson()
 }
