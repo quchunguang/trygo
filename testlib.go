@@ -1,13 +1,19 @@
-package main
+package trygo
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/alphazero/Go-Redis"
-	"github.com/quchunguang/trygo"
+	"github.com/deckarep/golang-set"
 	"image"
+	"image/color"
+	"image/jpeg"
+	"image/png"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -22,18 +28,95 @@ type Hello struct{}
 func (h Hello) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello!")
 }
-func testhttpserv() {
+func DemoHttpServ() {
 	var h Hello
 	http.ListenAndServe("localhost:4000", h)
 }
 
-func testimage() {
-	m := image.NewRGBA(image.Rect(0, 0, 100, 100))
-	fmt.Println(m.Bounds())
-	fmt.Println(m.At(0, 0).RGBA())
+func DemoImage() {
+	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	fmt.Println(img.Bounds())
+	fmt.Println(img.At(0, 0).RGBA())
 }
 
-func testredis() {
+func DemoImage2() {
+	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	for x := 20; x < 80; x++ {
+		y := x/3 + 15
+		img.Set(x, y, color.Black)
+	}
+	w, _ := os.Create("Demoimage2.png")
+	defer w.Close()
+	png.Encode(w, img)
+}
+
+// Show image using command `display` of ImageMagick
+func ShowImage(filename string) {
+	cmd := exec.Command("display", filename)
+	err := cmd.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = cmd.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	} else {
+		return x
+	}
+}
+func DrawLine(img *image.RGBA, x1, y1, x2, y2 int, color color.Color) {
+	if abs(x2-x1) >= abs(y2-y1) {
+		if x1 > x2 {
+			x1, x2 = x2, x1
+			y1, y2 = y2, y1
+		}
+		for x := x1; x <= x2; x++ {
+			y := (x-x1)*(y2-y1)/(x2-x1) + y1
+			img.Set(x, y, color)
+		}
+	} else {
+		if y1 > y2 {
+			x1, x2 = x2, x1
+			y1, y2 = y2, y1
+		}
+		for y := y1; y <= y2; y++ {
+			x := (y-y1)*(x2-x1)/(y2-y1) + x1
+			img.Set(x, y, color)
+		}
+	}
+}
+func DemoImage3() {
+	filename := "testimage3.jpg"
+	img := image.NewRGBA(image.Rect(0, 0, 640, 480))
+	for y := img.Rect.Min.Y; y < img.Rect.Max.Y; y++ {
+		for x := img.Rect.Min.X; x < img.Rect.Max.X; x++ {
+			img.Set(x, y, color.RGBA{0x88, 0xff, 0x88, 0xff})
+		}
+	}
+	DrawLine(img, 100, 100, 600, 110, color.Black)
+
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	jpeg.Encode(file, img, &jpeg.Options{80})
+	ShowImage(filename)
+}
+func DemoImage4() {
+	cmd := exec.Command("date")
+	buf, err := cmd.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(buf))
+}
+func DemoRedis() {
 	spec := redis.DefaultSpec().Db(0).Password("")
 	client, err := redis.NewSynchClientWithSpec(spec)
 	if err != nil {
@@ -51,13 +134,13 @@ func testredis() {
 	if value == nil {
 		value := []byte("Hello world!")
 		client.Set(dbkey, value)
-		fmt.Printf("插入数据>%s \n", value)
+		fmt.Printf("Input>%s \n", value)
 	} else {
-		fmt.Printf("接收到数据>%s \n", value)
+		fmt.Printf("Receive>%s \n", value)
 	}
 }
 
-func testfile() error {
+func DemoFile() error {
 	name := "test2.go"
 	f, err := os.Open(name)
 	if err != nil {
@@ -103,7 +186,7 @@ func (s simplestack) String() (ret string) {
 	ret += "]"
 	return
 }
-func teststack() {
+func DemoStack() {
 	var s simplestack
 	fmt.Println(s)
 	s.push(9)
@@ -121,7 +204,7 @@ func teststack() {
 	fmt.Println(s)
 }
 
-func testpackage() {
+func DemoPackage() {
 	// 包名是小写的一个单词;不应当有下划线或混合大小写
 	// import bar "bytes"
 	// bar.Buffer()
@@ -129,7 +212,7 @@ func testpackage() {
 	// % cp even.go $GOPATH/src/example/even
 	// % go build
 	// % go install
-	fmt.Print(trygo.Even(2), trygo.Even(3))
+	fmt.Print(Even(2), Even(3))
 }
 
 type Sorter interface {
@@ -158,7 +241,7 @@ func Sort(x Sorter) {
 		}
 	}
 }
-func testsort() {
+func DemoSort() {
 	ints := Xi{44, 67, 3, 17, 89, 10, 73, 9, 14, 8}
 	strings := Xs{"nut", "ape", "elephant", "zoo", "go"}
 	Sort(ints)
@@ -167,7 +250,7 @@ func testsort() {
 	fmt.Printf("%v\n", strings)
 }
 
-func testio() {
+func DemoIo() {
 	buf := make([]byte, 1024)
 	f, _ := os.Open("/etc/passwd")
 	defer f.Close()
@@ -179,7 +262,7 @@ func testio() {
 		os.Stdout.Write(buf[:n])
 	}
 }
-func testio2() {
+func DemoIo2() {
 	buf := make([]byte, 1024)
 	f, _ := os.Open("/etc/passwd")
 	defer f.Close()
@@ -195,7 +278,7 @@ func testio2() {
 		w.Write(buf[0:n])
 	}
 }
-func testio3() {
+func DemoIo3() {
 	f, _ := os.Open("/etc/passwd")
 	defer f.Close()
 	r := bufio.NewReader(f)
@@ -205,7 +288,19 @@ func testio3() {
 	}
 }
 
-func testexec() {
+func DemoIo4() {
+	r, _ := os.Open("/etc/passwd")
+	w, _ := os.Create("/tmp/passwd")
+	defer r.Close()
+	defer w.Close()
+
+	num, err := io.Copy(w, r)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(num)
+}
+func DemoExec() {
 	cmd := exec.Command("/bin/ls", "-l")
 	// err := cmd.Run()
 	buf, err := cmd.Output()
@@ -214,13 +309,31 @@ func testexec() {
 	}
 	fmt.Print(string(buf))
 }
-
-func testnet() {
+func DemoExec2() {
+	var output bytes.Buffer
+	cmd := exec.Command("cat")
+	cmd.Stdout = &output
+	stdin, _ := cmd.StdinPipe()
+	cmd.Start()
+	stdin.Write([]byte("widuu test"))
+	stdin.Close()
+	cmd.Wait()
+	fmt.Printf("The output is: %s\n", output.Bytes())
+}
+func DemoExec3() {
+	cmd := exec.Command("ls", "-ll")
+	stdout, _ := cmd.StdoutPipe()
+	cmd.Start()
+	d, _ := ioutil.ReadAll(stdout)
+	cmd.Wait()
+	fmt.Println(string(d))
+}
+func DemoNet() {
 	// conn, e := Dial("tcp", "192.0.32.10:80")
 	// conn, e := Dial("udp", "192.0.32.10:80")
 	// conn, e := Dial("tcp", "[2620:0:2d0:200::10]:80")
 }
-func testhttp() {
+func DemoHttp() {
 	r, err := http.Get("http://www.baidu.com")
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())
@@ -262,7 +375,7 @@ func getjson() ([]byte, error) {
 	p := Payload{b}
 	return json.MarshalIndent(p, "", "    ")
 }
-func testjson() {
+func DemoJson() {
 	res, _ := getjson()
 	fmt.Print(string(res))
 
@@ -303,13 +416,13 @@ func httpd() {
 	http.HandleFunc("/", serveRest)
 	http.ListenAndServe("localhost:1337", nil)
 }
-func testhttpjson() {
+func DemoHttpJson() {
 	go httpd()
 	go httpc()
 	time.Sleep(2e9)
 }
 
-func testsync() {
+func DemoSync() {
 	done := make(chan bool)
 	go func() {
 		httpd()
@@ -332,7 +445,7 @@ func initConifg(once *sync.Once, handler func()) {
 	handler()
 
 }
-func testsync2() {
+func DemoSync2() {
 	var once sync.Once
 	completeChan := []chan bool{make(chan bool, 1), make(chan bool, 1)}
 
@@ -356,7 +469,7 @@ func payload() {
 	runtime.Gosched()
 	fmt.Println("in payload()")
 }
-func testsync3() {
+func DemoSync3() {
 	runtime.GOMAXPROCS(4) // MUST
 	waitchan := make(chan int)
 	for i := 0; i < 10; i++ {
@@ -371,23 +484,70 @@ func testsync3() {
 	}
 }
 
-func main() {
-	// testhttpserv() // true loop by default!
-	// testimage()
-	// testredis() // need redis open
-	// testfile()
-	// teststack()
-	// testpackage()
-	// testsort()
-	// testio()
-	// testio2()
-	// testio3()
-	// testexec()
-	// testnet()
-	// testhttp() // need network connection
-	// testjson()
-	// testhttpjson() // true loop by default!
-	// testsync()
-	// testsync2()
-	// testsync3()
+// from: github.com/deckarep/golang-set
+func DemoSet() {
+	rc := mapset.NewSet()
+	rc.Add("Cooking")
+	rc.Add("English")
+	rc.Add("Math")
+	rc.Add("Biology")
+	ss := []interface{}{"Biology", "Chemistry"}
+	sc := mapset.NewSetFromSlice(ss)
+	ec := mapset.NewSet()
+	ec.Add("Welding")
+	ec.Add("Music")
+	ec.Add("Automotive")
+	bc := mapset.NewSet()
+	bc.Add("Go Programming")
+	bc.Add("Python Programming")
+	//Show me all the available classes I can take
+	allc := rc.Union(sc).Union(ec).Union(bc)
+	fmt.Println(allc)
+	//Is cooking considered a science class?
+	fmt.Println(sc.Contains("Cooking"))
+	//Show me all classes that are not science classes, since I hate science.
+	fmt.Println(allc.Difference(sc))
+	//Which science classes are also required classes?
+	fmt.Println(sc.Intersect(rc))
+	//How many bonus classes do you offer?
+	fmt.Println(bc.Cardinality())
+	fmt.Println(allc.IsSuperset(mapset.NewSetFromSlice(
+		[]interface{}{"Welding", "Automotive", "English"})))
+}
+
+//////
+type Item struct {
+	Key   string
+	Value string
+}
+
+func DemoQueue() {
+	var v = Item{Key: "a", Value: "A"}
+	queue := NewQueue()
+	fmt.Println(queue.Enqueue(v).Value)
+	v.Key = "b"
+	v.Value = "B"
+	fmt.Println(queue.Enqueue(v).Value)
+	v.Key = "c"
+	v.Value = "C"
+	fmt.Println(queue.Enqueue(v).Value)
+	v.Key = "d"
+	v.Value = "D"
+	fmt.Println(queue.Enqueue(v).Value)
+	v.Key = "e"
+	v.Value = "E"
+	fmt.Println(queue.Enqueue(v).Value)
+
+	fmt.Println(queue.Query(func(val interface{}) bool {
+		if val.(Item).Key == "a" {
+			return true
+		} else {
+			return false
+		}
+	}).Value)
+	fmt.Println(queue.Contain(v))
+	fmt.Println(queue.Dequeue().Value)
+	fmt.Println(queue.Dequeue().Value)
+	fmt.Println(queue.Dequeue().Value)
+	fmt.Println(queue.Dequeue().Value)
 }

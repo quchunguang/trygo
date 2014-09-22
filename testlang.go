@@ -1,4 +1,4 @@
-package main
+package trygo
 
 /*
 #include <stdio.h>
@@ -8,9 +8,9 @@ import "C" // this MUST be single sentence with magic omments above !!!
 import (
 	"bytes"
 	"fmt"
-	"github.com/quchunguang/trygo"
 	"io"
 	"math"
+	"math/rand"
 	"os"
 	"reflect"
 	"runtime"
@@ -68,7 +68,7 @@ func pow(x, n, lim float64) float64 {
 	return lim
 }
 
-func testdefine() {
+func DemoDefine() {
 	m, n, p := 1, 2, 3
 	const World = "世界"
 	const Truth bool = true
@@ -80,10 +80,11 @@ func testdefine() {
 	fmt.Println(divmod(10, 3))
 	fmt.Println(x, y, z, c, python, java)
 	fmt.Println(m, n, p, World, Truth)
-	fmt.Println(Big, Small, needInt(Small), needFloat(Small), needFloat(Big))
+	fmt.Println(Big, Small, needInt(Small), needFloat(Small),
+		needFloat(Big))
 }
 
-func testfor() {
+func DemoFor() {
 	sum := 0
 	for i := 0; i < 10; i++ {
 		sum += i
@@ -103,11 +104,12 @@ func testfor() {
 		fmt.Println(n)
 	}
 	for pos, char := range "aΦx" {
-		fmt.Printf("character '%c' starts at byte position %d\n", char, pos)
+		fmt.Printf("character '%c' starts at byte position %d\n",
+			char, pos)
 	}
 }
 
-func testif() {
+func DemoIf() {
 	fmt.Println(sqrt(-82))
 	fmt.Println(
 		pow(3, 2, 10),
@@ -115,7 +117,7 @@ func testif() {
 	)
 }
 
-func teststruct() {
+func DemoStruct() {
 	// var v Vertex = Vertex{1, 2}
 	v := Vertex{1, 2}
 	w := &v
@@ -128,7 +130,7 @@ func teststruct() {
 	fmt.Println(o)
 }
 
-func testmap1() {
+func DemoMap1() {
 	mvex := make(map[string]Vertex)
 	mvex["Bell Labs"] = Vertex{40.68433, 74.39967}
 	fmt.Println(mvex["Bell Labs"])
@@ -143,7 +145,7 @@ func testmap1() {
 	fmt.Println(nvex)
 }
 
-func testmap2() {
+func DemoMap2() {
 	m := make(map[string]int)
 
 	m["Answer"] = 42
@@ -159,7 +161,7 @@ func testmap2() {
 	fmt.Println("The value:", v, "Present?", ok)
 }
 
-func testslice() {
+func DemoSlice() {
 	p := []int{2, 3, 5, 7, 11, 13}
 	fmt.Println("p ==", p)
 	fmt.Println("p[1:4] ==", p[1:4])
@@ -175,7 +177,7 @@ func testslice() {
 	}
 }
 
-func testslice2() {
+func DemoSlice2() {
 	a := make([]int, 5)
 	printSlice("a", a)
 	b := make([]int, 0, 5)
@@ -198,7 +200,7 @@ func printSlice(s string, x []int) {
 		s, len(x), cap(x), x)
 }
 
-func testfunc() {
+func DemoFunc() {
 	hypot := func(x, y float64) float64 {
 		return math.Sqrt(x*x + y*y)
 	}
@@ -214,7 +216,7 @@ func adder() func(int) int {
 	}
 }
 
-func testclosure() {
+func DemoClosure() {
 	pos, neg := adder(), adder()
 	for i := 0; i < 10; i++ {
 		fmt.Println(
@@ -224,7 +226,7 @@ func testclosure() {
 	}
 }
 
-func testforrange() {
+func DemoForrange() {
 	var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
 	for i, v := range pow {
 		fmt.Printf("2**%d = %d\n", i, v)
@@ -242,7 +244,7 @@ func fromfun() int {
 	return 1
 }
 
-func testswitch() {
+func DemoSwitch() {
 	fmt.Print("Go runs on ")
 	switch os := runtime.GOOS; os {
 	case "darwin":
@@ -301,7 +303,7 @@ func Sqrt(x float64) float64 {
 	return s
 }
 
-func exercise_sqrt() {
+func ExerciseSqrt() {
 	fmt.Println(math.Sqrt(2))
 	fmt.Println(Sqrt(2))
 }
@@ -315,7 +317,7 @@ func wordcount(s string) map[string]int {
 	return wc
 }
 
-func exercise_wc() {
+func ExerciseWc() {
 	wc := wordcount("a b c a a e d e")
 	for i, v := range wc {
 		fmt.Println(i, v)
@@ -331,7 +333,7 @@ func fibonacci() func() int {
 	return fun
 }
 
-func exercise_fibonacci() {
+func ExerciseFibonacci() {
 	f := fibonacci()
 	for i := 0; i < 10; i++ {
 		fmt.Println(f())
@@ -342,7 +344,7 @@ func (v *Vertex) Abs() float64 {
 	return math.Sqrt(v.Lat*v.Lat + v.Long*v.Long)
 }
 
-func testmethod() {
+func DemoMethod() {
 	v := Vertex{3, 4}
 	fmt.Println(v.Abs())
 }
@@ -356,7 +358,7 @@ func (f MyFloat) Abs() float64 {
 	return float64(f)
 }
 
-func testmethod2() {
+func DemoMethod2() {
 	f := MyFloat(-math.Sqrt2)
 	fmt.Println(f.Abs())
 }
@@ -365,17 +367,42 @@ func (v Vertex) Notchange() {
 	v.Long = 0
 }
 
-func testref() {
+func DemoRef() {
 	v := Vertex{3, 4}
 	v.Notchange()
 	fmt.Println(v)
+
+	// map is pointer type
+	var m = map[int]int{5: 1, 6: 2}
+	var n map[int]int // just a ref
+	m[1] = 2
+	fmt.Println(n == nil)
+	n = m
+	m[2] = 4
+	fmt.Println(n)
+
+	// slice is pointer type
+	var o = []int{1, 2, 3}
+	var p []int // just a ref
+	fmt.Println(p == nil)
+	p = o
+	o[0] = 10
+	fmt.Println(p)
+
+	// array is value type
+	var r = [5]int{1, 2, 3, 4, 5}
+	var s [5]int
+	// fmt.Println(s == nil) // err: cannot convert nil to type [5]int
+	s = r
+	r[0] = 10
+	fmt.Println(s)
 }
 
 type Abser interface {
 	Abs() float64
 }
 
-func testinterface() {
+func DemoInterface() {
 	var ia Abser
 	f := MyFloat(-math.Sqrt2)
 	ia = f
@@ -398,7 +425,7 @@ type ReadWriter interface {
 	Writer
 }
 
-func testinterface2() {
+func DemoInterface2() {
 	var w Writer
 	// os.Stdout implements Writer
 	w = os.Stdout
@@ -419,7 +446,7 @@ func run() error {
 		"it did not work!",
 	}
 }
-func testerror() {
+func DemoError() {
 	if err := run(); err != nil {
 		fmt.Println(err)
 	}
@@ -437,7 +464,7 @@ func SqrtE(f float64) (float64, error) {
 		return math.Sqrt(f), nil
 	}
 }
-func exercise_error() {
+func ExerciseError() {
 	fmt.Println(SqrtE(2))
 	fmt.Println(SqrtE(-2))
 }
@@ -459,7 +486,7 @@ func (rot *rot13Reader) Read(p []byte) (n int, err error) {
 	}
 	return
 }
-func exercise_ioreader() {
+func ExerciseIoreader() {
 	s := strings.NewReader("Lbh penpxrq gur pbqr!")
 	r := rot13Reader{s}
 	io.Copy(os.Stdout, &r)
@@ -470,7 +497,7 @@ func say(s string) {
 		fmt.Println(s)
 	}
 }
-func testgoroutine() {
+func DemoGoroutine() {
 	go say("world")
 	say("hello")
 }
@@ -481,7 +508,7 @@ func sum(a []int, c chan int) {
 	}
 	c <- sum
 }
-func testchannel() {
+func DemoChannel() {
 	a := []int{7, 2, 8, -9, 4, 0}
 	c := make(chan int)
 	go sum(a[:len(a)/2], c)
@@ -489,7 +516,7 @@ func testchannel() {
 	x, y := <-c, <-c
 	fmt.Println(x, y, x+y)
 }
-func testchannel2() {
+func DemoChannel2() {
 	c := make(chan int, 2)
 	c <- 1
 	c <- 2
@@ -504,7 +531,7 @@ func fibonacci2(n int, c chan int) {
 	}
 	close(c)
 }
-func testchannel3() {
+func DemoChannel3() {
 	c := make(chan int, 10)
 	go fibonacci2(80, c)
 	for i := range c {
@@ -523,7 +550,7 @@ func fibonacci3(c, quit chan int) {
 		}
 	}
 }
-func testchannel4() {
+func DemoChannel4() {
 	c := make(chan int)
 	quit := make(chan int)
 	go func() {
@@ -534,7 +561,7 @@ func testchannel4() {
 	}()
 	fibonacci3(c, quit)
 }
-func testchannel5() {
+func DemoChannel5() {
 	tick := time.Tick(1e8)
 	boom := time.After(5e8)
 	for {
@@ -588,7 +615,7 @@ func walk_postorder_recursive(t *Tree, c chan int) {
 func walk_levelorder_recursive(t *Tree, c chan int) {
 }
 func walk_preorder(t *Tree, c chan int) {
-	s := trygo.NewStack()
+	s := NewStack()
 	s.Push(t)
 	var h *Tree
 	for !s.Empty() {
@@ -628,10 +655,12 @@ func compare_chan(c1, c2 chan int) {
 		}
 	}
 }
-func exercise_checktree() {
+func ExerciseChecktree() {
 	// create trees and init chans
-	t1 := &Tree{&Tree{&Tree{nil, 1, nil}, 1, &Tree{nil, 2, nil}}, 3, &Tree{&Tree{nil, 5, nil}, 8, &Tree{nil, 13, nil}}}
-	t2 := &Tree{&Tree{&Tree{&Tree{nil, 1, nil}, 1, &Tree{nil, 2, nil}}, 3, &Tree{nil, 5, nil}}, 8, &Tree{nil, 13, nil}}
+	t1 := &Tree{&Tree{&Tree{nil, 1, nil}, 1, &Tree{nil, 2, nil}},
+		3, &Tree{&Tree{nil, 5, nil}, 8, &Tree{nil, 13, nil}}}
+	t2 := &Tree{&Tree{&Tree{&Tree{nil, 1, nil}, 1, &Tree{nil, 2, nil}}, 3,
+		&Tree{nil, 5, nil}}, 8, &Tree{nil, 13, nil}}
 	c1 := make(chan int)
 	c2 := make(chan int)
 
@@ -674,7 +703,7 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 	return
 }
 
-func exercise_craw() {
+func ExerciseCraw() {
 	Crawl("http://golang.org/", 4, fetcher)
 }
 
@@ -727,7 +756,7 @@ var fetcher = &fakeFetcher{
 	},
 }
 
-func teststring() {
+func DemoString() {
 	str := "LaoYing老鹰"
 	for i := 0; i < len(str); i++ {
 		fmt.Println(i, str[i])
@@ -741,7 +770,7 @@ func teststring() {
 		fmt.Println("r[", i, "]=", r[i], "string=", string(r[i]))
 	}
 }
-func testtype() {
+func DemoType() {
 	const (
 		A = iota
 		B
@@ -769,7 +798,7 @@ dsadsaddsa`
 	fmt.Println(x, y, z)
 }
 
-func testgoto() {
+func DemoGoto() {
 	i := 0
 Here:
 	fmt.Println(i)
@@ -778,7 +807,7 @@ Here:
 	}
 	goto Here
 }
-func testdefer() (ret int) {
+func deferit() (ret int) {
 	defer func() {
 		ret = 2
 	}()
@@ -793,19 +822,26 @@ func testdefer() (ret int) {
 	}
 	return 0
 }
+func DemoDefer() {
+	fmt.Println(deferit())
+}
+
 func myfunc2(arg ...interface{}) {
 
 }
 func myfunc1(arg ...int) {
 
 }
-func testvarargs(arg ...int) {
+func callvarargs(arg ...int) {
 	myfunc1(arg...)
 	myfunc1(arg[:2]...)
 	myfunc2(arg)
 	myfunc2(4, true, "abc")
 }
-func testfuncvalue() {
+func DemoVarargs() {
+	callvarargs(1, 2, 3)
+}
+func DemoFuncvalue() {
 	f := func(name string) {
 		fmt.Printf("Hello %s\n", name)
 	}
@@ -825,19 +861,26 @@ func Map(f func(int) int, l []int) []int {
 	}
 	return j
 }
-func testmap() {
+func DemoMap() {
 	double := func(a int) int { return 2 * a }
 	l := []int{1, 2, 3, 4, 5}
 	m := Map(double, l)
 	fmt.Println(m)
 }
 func f() {
-	// panic(interface{})是一个内建函数,可以中断原有的控制流程,进入一个令人恐慌的流程中。当函数 F 调用 panic ,函数 F 的执行被中断,并且 F 中的延迟函数会正常执行,然后 F 返回到调用它的地方。在调用的地方, F 的行为就像调用了 panic 。这一过程继续向上,直到程序崩溃时的所有 goroutine 返回。恐慌可以直接调用 panic 产生。也可以由 运行时错误 产生,例如访问越界的数组。
+	// panic(interface{})是一个内建函数,可以中断原有的控制流程,
+	// 进入一个令人恐慌的流程中。当函数F调用panic,函数F的执行被中断,
+	// 并且F中的延迟函数会正常执行,然后 F 返回到调用它的地方。
+	// 在调用的地方, F的行为就像调用了 panic 。这一过程继续向上,
+	// 直到程序崩溃时的所有 goroutine 返回。
+	// 恐慌可以直接调用panic产生。也可以由运行时错误产生,
+	// 例如访问越界的数组。
 	panic("i'm panic!")
 	fmt.Println("Hi, panic?")
 }
 func throwsPanic(f func()) (b bool) {
-	// recover()是一个内建的函数,可以让进入令人恐慌的流程中的 goroutine 恢复过来。仅在延迟函数中有效。
+	// recover()是一个内建的函数,可以让进入令人恐慌的流程中的goroutine
+	// 恢复过来。仅在延迟函数中有效。
 	defer func() {
 		if x := recover(); x != nil {
 			b = true
@@ -847,12 +890,12 @@ func throwsPanic(f func()) (b bool) {
 	f()
 	return
 }
-func testpanic() {
+func DemoPanic() {
 	var ret bool = throwsPanic(f)
 	fmt.Println(ret)
 }
 
-func exercise_functions() {
+func ExerciseFunctions() {
 	d := []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	var sum float64
 	for _, v := range d {
@@ -865,32 +908,32 @@ func printthem(them ...int) {
 		fmt.Println(d)
 	}
 }
-func testvararg2() {
+func DemoVararg2() {
 	printthem(1, 4, 5, 7, 4)
 	printthem(1, 2, 4)
 }
-func testtest() {
-	// see example/even
-	// cd $GOPATH/src/example/even
-	// go test
-}
-func commonpkg() {
+func DemoPkg() {
 	// fmt
 	// %v 默认格式的值。当打印结构时,加号( %+v )会增加字段名;
 	// %#v Go 样式的值表达;
 	// %T 带有类型的 Go 样式的值表达;
 
 	// io
-	// 这个包提供了原始的 I/O 操作界面。它主要的任务是对os包这样的原始的 I/O 进行封装,增加一些其他相关,使其具有抽象功能用在公共的接口上。
+	// 这个包提供了原始的 I/O 操作界面。
+	// 它主要的任务是对os包这样的原始的 I/O 进行封装,增加一些其他相关,
+	// 使其具有抽象功能用在公共的接口上。
 
-	//bufio
-	//这个包实现了缓冲的 I/O 。它封装于 io.Reader 和 io.Writer 对象,创建了另一个对象( Reader 和 Writer )在提供缓冲的同时实现了一些文本 I/O 的功能。
+	// bufio
+	// 这个包实现了缓冲的 I/O 。它封装于 io.Reader 和 io.Writer 对象,
+	// 创建了另一个对象(Reader和Writer)在提供缓冲的同时实现了一些文本
+	// I/O的功能。
 
 	// sort
 	// sort 包提供了对数组和用户定义集合的原始的排序功能。
 
 	// strconv
-	// strconv 包提供了将字符串转换成基本数据类型,或者从基本数据类型转换为字符串的功能。
+	// strconv 包提供了将字符串转换成基本数据类型,
+	// 或者从基本数据类型转换为字符串的功能。
 
 	// os
 	// os 包提供了与平台无关的操作系统功能接口。其设计是 Unix 形式的。
@@ -905,16 +948,22 @@ func commonpkg() {
 	// encoding/json 包实现了编码与解码 RFC 4627 定义的 JSON 对象。
 
 	// text/template
-	// 数据驱动的模板,用于生成文本输出,例如 HTML 。将模板关联到某个数据结构上进行解析。模板内容指向数据结构的元素(通常结构的字段或者 map 的键)控制解析并且决定某个值会被显示。模板扫描结构以便解析,而 “ 游标 ” @ 决定了当前位置在结构中的值。
+	// 数据驱动的模板,用于生成文本输出,例如 HTML 。将模板关联到某个
+	// 数据结构上进行解析。模板内容指向数据结构的元素(通常结构的
+	// 字段或者 map 的键)控制解析并且决定某个值会被显示。
+	// 模板扫描结构以便解析,而 “ 游标 ” @ 决定了当前位置在结构中的值。
 
 	// net/http
-	// net/http 实现了 HTTP 请求、响应和 URL 的解析,并且提供了可扩展的 HTTP服务和基本的 HTTP 客户端。
+	// net/http 实现了 HTTP 请求、响应和 URL 的解析,并且提供了可扩展的
+	// HTTP服务和基本的 HTTP 客户端。
 
 	// unsafe
-	// unsafe 包包含了 Go 程序中数据类型上所有不安全的操作。 通常无须使用这个。
+	// unsafe包包含了Go程序中数据类型上所有不安全的操作。
 
 	// reflect
-	// reflect 包实现了运行时反射,允许程序通过抽象类型操作对象。通常用于处理静态类型 interface{} 的值,并且通过 Typeof 解析出其动态类型信息,通常会返回一个有接口类型 Type 的对象。
+	// reflect 包实现了运行时反射,允许程序通过抽象类型操作对象。
+	// 通常用于处理静态类型 interface{} 的值,并且通过 Typeof 解析出
+	// 其动态类型信息,通常会返回一个有接口类型 Type 的对象。
 
 	// os/exec
 	// os/exec 包执行外部命令。
@@ -930,7 +979,7 @@ type SyncedBuffer struct {
 	buffer bytes.Buffer
 }
 
-func testpointer() {
+func DemoPointer() {
 	var p *int
 	fmt.Printf("%v\n", p)
 
@@ -958,7 +1007,7 @@ type NameAge struct {
 	age  int
 }
 
-func testcustomtype() {
+func DemoCustomtype() {
 	a := new(NameAge)
 	a.name = "Pete"
 	a.age = 42
@@ -1011,7 +1060,7 @@ func Map3(n []e, f func(e) e) []e {
 	}
 	return m
 }
-func testmap3() {
+func DemoMap3() {
 	m := []e{1, 2, 3, 4}
 	s := []e{"a", "b", "c", "d"}
 	mf := Map3(m, mult2)
@@ -1052,7 +1101,7 @@ func cheacktype(p I) {
 func g(something interface{}) int {
 	return something.(I).Get()
 }
-func testtype2() {
+func DemoType2() {
 	var s S
 	var ps *S
 	ps = &s
@@ -1074,7 +1123,7 @@ type Interface2 interface {
 	Pop() interface{}
 }
 
-func testinterface_recurve() {
+func DemoInterface_recurve() {
 
 }
 
@@ -1098,7 +1147,7 @@ func ShowTag(i interface{}) {
 		fmt.Println("tag: ", tag, "\nname: ", name)
 	}
 }
-func testintrospection() {
+func DemoIntrospection() {
 	p1 := new(Person)
 	p1.name = "guang"
 	ShowTag(p1)
@@ -1108,7 +1157,7 @@ func ready(w string, sec int) {
 	time.Sleep(time.Duration(sec) * time.Second)
 	fmt.Println(w, "is ready!")
 }
-func testgoroutine2() {
+func DemoGoroutine2() {
 	go ready("Tea", 1)
 	go ready("Coffee", 1)
 	fmt.Println("I'm waiting")
@@ -1118,61 +1167,204 @@ func testgoroutine2() {
 	fmt.Println(gomaxprocs)
 }
 
-func testcgo() {
+func DemoCgo() {
 	C.puts(C.CString("Hello, 世界\n"))
 	fmt.Println("hi")
 }
 
-func main() {
-	// testdefine()
-	// testfor()
-	// testif()
-	// teststruct()
-	// testmap1()
-	// testmap2()
-	// testslice()
-	// testslice2()
-	// testfunc()
-	// testclosure()
-	// testforrange()
-	// testswitch()
-	// exercise_sqrt()
-	// exercise_wc()
-	// exercise_fibonacci()
-	// testmethod()
-	// testmethod2()
-	// testref()
-	// testinterface()
-	// testinterface2()
-	// testerror()
-	// exercise_error()
-	// exercise_ioreader()
-	// testgoroutine()
-	// testchannel()
-	// testchannel2()
-	// testchannel3()
-	// testchannel4()
-	// testchannel5()
-	// exercise_checktree()
-	// exercise_craw()
-	// teststring()
-	// testtype()
-	// testgoto()
-	// fmt.Println(testdefer())
-	// testvarargs(1, 2, 3)
-	// testfuncvalue()
-	// testmap()
-	// testpanic()
-	// exercise_functions()
-	// testvararg2()
-	// testtest()
-	// commonpkg()
-	// testpointer()
-	// testcustomtype()
-	// testmap3()
-	// testtype2()
-	// testinterface_recurve()
-	// testintrospection()
-	// testgoroutine2()
-	// testcgo()
+//////
+func DemoFunc2() {
+	fns := []binFunc{
+		func(x, y int) int { return x + y },
+		func(x, y int) int { return x - y },
+		func(x, y int) int { return x * y },
+		func(x, y int) int { return x / y },
+		func(x, y int) int { return x % y },
+	}
+	for _, f := range fns {
+		fmt.Printf("%d ", f(2, 3))
+	}
+	fn1 := fns[rand.Intn(len(fns))]
+	x, y := 12, 5
+	fmt.Printf("\n%d\n", fn1(x, y))
+}
+
+///////
+type binFunc func(int, int) int
+type walkFn func(*int) walkFn
+
+func walkEqual(i *int) walkFn {
+	*i += rand.Intn(7) - 3
+	return walkEqual
+}
+
+func DemoTyperecursive() {
+	fn2, progress := walkEqual, 0
+	for i := 0; i < 20; i++ {
+		fn2 = fn2(&progress)
+		fmt.Printf("%d ", progress)
+	}
+}
+
+//////
+func pickFunc(fns ...func()) func() {
+	return fns[rand.Intn(len(fns))]
+}
+
+func produce(c chan func(), n int, fns ...func()) {
+	defer close(c)
+	for i := 0; i < n; i++ {
+		c <- pickFunc(fns...)
+	}
+}
+func DemoFuncchan() {
+	var delay = 200 * time.Millisecond
+	// time is frozen on Playground, so this is always the same.
+	rand.Seed(time.Now().Unix())
+
+	x := 10
+	fns := []func(){
+		func() { x += 1 },
+		func() { x -= 1 },
+		func() { x *= 2 },
+		func() { x /= 2 },
+		func() { x *= x },
+	}
+
+	c := make(chan func())
+	go produce(c, 10, fns...)
+
+	for fn := range c {
+		fn()
+		fmt.Printf("%d ", x)
+		time.Sleep(delay)
+	}
+}
+
+type MyString string
+
+func DemoConst() {
+	const hello = "Hello, 世界"
+	const typedHello string = "Hello, 世界"
+	const myStringHello MyString = "Hello, 世界"
+
+	var s string
+	s = typedHello
+	fmt.Println(s)
+
+	var m MyString
+	// m = typedHello // Type error
+	m = MyString(typedHello)
+	fmt.Println(m)
+
+	// untyped string constant can Assigns to a variable of any type compatible with strings
+	m = "Hello, 世界"
+	m = hello
+
+	// an untyped constant has a default type
+	fmt.Printf("%T: %v\n", "Hello, 世界", "Hello, 世界")
+	fmt.Printf("%T: %v\n", hello, hello)
+	fmt.Printf("%T: %v\n", myStringHello, myStringHello)
+
+	// Default type determined by syntax
+	fmt.Printf("%T %v\n", 0, 0)
+	fmt.Printf("%T %v\n", 0.0, 0.0)
+	fmt.Printf("%T %v\n", 'x', 'x')
+	fmt.Printf("%T %v\n", 0i, 0i)
+
+	// boolean
+	type MyBool bool
+	const True = true
+	const TypedTrue bool = true
+	var mb MyBool
+	mb = true // OK
+	mb = True // OK
+	// mb = TypedTrue // Bad, const TypedTrue has type bool
+	fmt.Println(mb)
+
+	// float64
+	type MyFloat64 float64
+	const Zero = 0.0
+	const TypedZero float64 = 0.0
+	var mf MyFloat64
+	mf = 0.0  // OK
+	mf = Zero // OK
+	// mf = TypedZero // Bad
+	fmt.Println(mf)
+
+	var f32 float32
+	f32 = 0.0
+	f32 = Zero // OK: Zero is untyped
+	// f32 = TypedZero // Bad: TypedZero is float64 not float32.
+	fmt.Println(f32)
+
+	const Huge = 1e1000
+	// Bad: constant 1.00000e+1000 overflows float64
+	// fmt.Println(Huge)
+	// can use it in expressions with other constants and use the value of those expressions if the result can be represented in the range of a float64
+	fmt.Println(Huge / 1e999)
+
+	// complex
+	type MyComplex128 complex128
+	const I = (0.0 + 1.0i)
+	const TypedI complex128 = (0.0 + 1.0i)
+	var mc MyComplex128
+	mc = (0.0 + 1.0i) // OK
+	mc = I            // OK
+	// mc = TypedI       // Bad
+	fmt.Println(mc)
+
+	const Two = 2.0 + 0i
+	val := Two
+	fmt.Printf("%T: %v\n", val, val)
+	var ff float64
+	var gg float64 = Two
+	ff = Two
+	fmt.Println(ff, "and", gg)
+
+	// Integers
+	// The same example could be built for any interger tyoes:
+	// int int8 int16 int32 int64
+	// uint uint8 uint16 uint32 uint64
+	// uintptr
+	type MyInt int
+	const Three = 3
+	const TypedThree int = 3
+	var mi MyInt
+	mi = 3     // OK
+	mi = Three // OK
+	// mi = TypedThree // Bad
+	fmt.Println(mi)
+
+	// rune and byte
+	var shi rune = '世'
+	var sshi string = "世"
+	fmt.Println(shi)         // print rune witch is unicode based 10
+	fmt.Println(len(sshi))   // the lenth of utf-8 bytes is 3
+	for _, v := range sshi { // one time only. v is rune (unicode)
+		fmt.Println(v)
+	}
+	for i := 0; i < len(sshi); i++ {
+		fmt.Println(sshi[i]) // 3 times. sshi[i] is byte (utf-8)
+	}
+	// Error: '世' has value 0x4e16, too large.
+	// type Char byte
+	// var c Char = '世'
+
+	const MaxUint = ^uint(0)
+	fmt.Printf("%x\n", MaxUint)
+
+	// one!
+	var f float32 = 1
+	var i int = 1.000
+	var u uint32 = 1e3 - 99.0*10.0 - 9
+	var c float64 = '\x01'
+	var p uintptr = '\u0001'
+	var r complex64 = 'b' - 'a'
+	var b byte = 1.0 + 3i - 3.0i
+	fmt.Println(f, i, u, c, p, r, b)
+
+	var fff = 'a' * 1.5
+	fmt.Println(fff)
+
 }

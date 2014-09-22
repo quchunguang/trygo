@@ -1,6 +1,5 @@
 /*
-   The even package implements a simple library for
-   even test.
+   The trygo package implements a simple library demos the package useage..
 */
 package trygo
 
