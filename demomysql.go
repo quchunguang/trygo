@@ -1,4 +1,4 @@
-package main
+package trygo
 
 import (
 	"database/sql"
@@ -128,7 +128,7 @@ func (test *TestMysql) Close() {
 	}
 }
 
-func main() {
+func DemoMysql() {
 	if test, err := Init(); err == nil {
 		test.Create()
 		test.Update()

@@ -1,4 +1,4 @@
-package main
+package trygo
 
 import (
 	"bufio"
@@ -26,7 +26,7 @@ func cat(r *bufio.Reader) {
 	}
 	return
 }
-func main() {
+func Cat() {
 	flag.Parse()
 	if flag.NArg() == 0 {
 		cat(bufio.NewReader(os.Stdin))

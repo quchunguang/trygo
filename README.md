@@ -1,7 +1,7 @@
 trygo
 =====
 
-Simple samples of golang witch goals to covers full fealture of golang.
+Simple samples of golang witch goals to covers full feature of golang.
 
 Description
 -----------
@@ -19,7 +19,7 @@ Description
 Usage
 -----
 
-Demos can be run seperatly by testing. For example, we want to run DemoDefine(), we can,
+Demos can be run separatly by testing. For example, we want to run DemoDefine(), we can,
 
 ```sh
 go test -test.run TestDemoDefine

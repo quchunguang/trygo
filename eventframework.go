@@ -1,4 +1,4 @@
-package main
+package trygo
 
 import (
 	"fmt"
@@ -198,7 +198,7 @@ func generate_events() {
 }
 
 // framework's main event loop
-func main() {
+func EventLoop() {
 	// create application and add to dictionary
 	// this will cause binding LOAD event raised
 	app := Application{"Application", make(map[string]Control), make(map[eventkey]func(Control))}

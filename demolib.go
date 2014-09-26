@@ -14,12 +14,17 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
+	"reflect"
+	"regexp"
 	"runtime"
+	"sort"
 	"strconv"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -45,7 +50,7 @@ func DemoImage2() {
 		y := x/3 + 15
 		img.Set(x, y, color.Black)
 	}
-	w, _ := os.Create("Demoimage2.png")
+	w, _ := os.Create("data/Demoimage2.png")
 	defer w.Close()
 	png.Encode(w, img)
 }
@@ -91,7 +96,7 @@ func DrawLine(img *image.RGBA, x1, y1, x2, y2 int, color color.Color) {
 	}
 }
 func DemoImage3() {
-	filename := "testimage3.jpg"
+	filename := "data/testimage3.jpg"
 	img := image.NewRGBA(image.Rect(0, 0, 640, 480))
 	for y := img.Rect.Min.Y; y < img.Rect.Max.Y; y++ {
 		for x := img.Rect.Min.X; x < img.Rect.Max.X; x++ {
@@ -550,4 +555,112 @@ func DemoQueue() {
 	fmt.Println(queue.Dequeue().Value)
 	fmt.Println(queue.Dequeue().Value)
 	fmt.Println(queue.Dequeue().Value)
+}
+
+// type Interface interface {
+//     Len() int
+//     Less(i, j int) bool
+//     Swap(i, j int)
+// }
+type intArray []int
+
+func (s intArray) Len() int           { return len(s) }
+func (s intArray) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s intArray) Less(i, j int) bool { return s[i] < s[j] }
+
+func DemoSortAny() {
+	a := []int{1, 5, 10, 4}
+	sort.Sort(intArray(a))
+}
+
+//////
+func DemoSocket() {
+	var buf = make([]byte, 50)
+	var n int
+	conn, err := net.Dial("tcp", "127.0.0.1:80")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer conn.Close()
+	conn.Write([]byte("GET /\n\n"))
+
+	for n, err = conn.Read(buf); n > 0; n, err = conn.Read(buf) {
+		fmt.Print(string(buf[:n]))
+	}
+}
+func DemoArgs() {
+	var li1 = []interface{}{"aa", 3}
+	fmt.Println(li1...)
+
+	var li2 []int
+	for i := 0; i < 100; i++ {
+		li2 = append(li2, i)
+		fmt.Printf("i=%d len=%d cap=%d\n", i, len(li2), cap(li2))
+	}
+}
+func DemoBufio() {
+	stdin := bufio.NewReader(os.Stdin)
+	for {
+		line, err := stdin.ReadString('\n')
+		if err != nil {
+			break
+		}
+		fmt.Print(line)
+	}
+	os.Exit(2)
+}
+func DemoRegexp() {
+	var (
+		before string = "Test loop1 in loop1"
+		after  string
+	)
+	if re, err := regexp.Compile("loop1"); err == nil {
+		after = re.ReplaceAllString(before, "ASM001")
+		fmt.Println(after)
+		ret := re.FindAllString(before, -1)
+		fmt.Println(ret)
+	}
+}
+
+func DemoGetenv() {
+	if val, found := syscall.Getenv("GOPATH"); found { // (1)
+		fmt.Println(val)
+	}
+}
+func DemoDeleteItem() {
+	var li = []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	for i := len(li) - 1; i >= 0; i-- {
+		if i%2 == 0 {
+			li = append(li[:i], li[i+1:]...)
+		}
+	}
+	fmt.Println(li[len(li):])
+}
+
+type MyStruct struct {
+	name string
+}
+
+func (s MyStruct) GetName() string {
+	return s.name
+}
+func DemoReflect() {
+	s := "this is string"
+	fmt.Println(reflect.TypeOf(s))
+	fmt.Println("-------------------")
+
+	fmt.Println(reflect.ValueOf(s))
+	var x float64 = 3.4
+	fmt.Println(reflect.ValueOf(x))
+	fmt.Println("-------------------")
+
+	a := new(MyStruct)
+	a.name = "yejianfeng"
+	typ := reflect.TypeOf(a)
+
+	fmt.Println(typ.NumMethod())
+	fmt.Println("-------------------")
+
+	b := reflect.ValueOf(a).MethodByName("GetName").Call([]reflect.Value{})
+	fmt.Println(b[0])
 }

@@ -1,4 +1,4 @@
-package main
+package trygo
 
 // $ ./permrec 977
 // 为了增加而需要重写
@@ -23,20 +23,20 @@ var (
 	value int
 )
 
-type Stack struct {
+type permrecstack struct {
 	i    int
 	data [MAXPOS]int
 }
 
-func (s *Stack) Reset()     { s.i = 0 }
-func (s *Stack) Len() int   { return s.i }
-func (s *Stack) Push(k int) { s.data[s.i] = k; s.i++ }
-func (s *Stack) Pop() int   { s.i--; return s.data[s.i] }
+func (s *permrecstack) Reset()     { s.i = 0 }
+func (s *permrecstack) Len() int   { return s.i }
+func (s *permrecstack) Push(k int) { s.data[s.i] = k; s.i++ }
+func (s *permrecstack) Pop() int   { s.i--; return s.data[s.i] }
 
 var found int
-var stack = new(Stack)
+var stack = new(permrecstack)
 
-func main() {
+func Permrec() {
 	flag.Parse()
 	list := []int{1, 6, 7, 8, 8, 75, ADD, SUB, MUL, DIV}
 	magic, ok := strconv.Atoi(flag.Arg(0)) // Arg0 是 i

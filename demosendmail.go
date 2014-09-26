@@ -1,4 +1,4 @@
-package main
+package trygo
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ func SendMail(user, password, host, to, subject, body, mailtype string) error {
 	return err
 }
 
-func main() {
+func DemoSendMail() {
 	user := "xxxx@163.com"
 	password := "xxxx"
 	host := "smtp.163.com:25"

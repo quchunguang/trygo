@@ -1,4 +1,4 @@
-package main
+package trygo
 
 // Usage:
 // client:
@@ -15,7 +15,7 @@ import (
 	"os/user"
 )
 
-func main() {
+func Fingerd() {
 	flag.Parse()
 	ln, err := net.Listen("tcp", ":79")
 	if err != nil {

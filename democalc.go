@@ -1,4 +1,4 @@
-package main
+package trygo
 
 import (
 	"bufio"
@@ -8,21 +8,21 @@ import (
 )
 
 var reader *bufio.Reader = bufio.NewReader(os.Stdin)
-var st = new(Stack)
+var st = new(calcstack)
 
-type Stack struct {
+type calcstack struct {
 	i    int
 	data [10]int
 }
 
-func (s *Stack) push(k int) {
+func (s *calcstack) push(k int) {
 	if s.i+1 > 9 {
 		return
 	}
 	s.data[s.i] = k
 	s.i++
 }
-func (s *Stack) pop() (ret int) {
+func (s *calcstack) pop() (ret int) {
 	s.i--
 	if s.i < 0 {
 		s.i = 0
@@ -31,7 +31,7 @@ func (s *Stack) pop() (ret int) {
 	ret = s.data[s.i]
 	return
 }
-func main() {
+func DemoCalc() {
 	for {
 		s, err := reader.ReadString('\n')
 		var token string

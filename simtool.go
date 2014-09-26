@@ -1,4 +1,4 @@
-package main
+package trygo
 
 import (
 	"bufio"
@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func dnslookup() {
+func DnsLookup() {
 	dnssec := flag.Bool("dnssec", false, "Request DNSSEC records")
 	port := flag.String("port", "53", "Set the query port")
 	flag.Usage = func() {
@@ -26,7 +26,7 @@ func dnslookup() {
 
 	}
 }
-func psgrp() {
+func Psgrp() {
 	ps := exec.Command("ps", "-e", "-opid,ppid,comm")
 	output, _ := ps.Output()
 	child := make(map[int][]int)
@@ -56,7 +56,7 @@ func psgrp() {
 	}
 }
 
-func wc() {
+func Wc() {
 	var chars, words, lines int
 	r := bufio.NewReader(os.Stdin)
 	for {
@@ -71,7 +71,7 @@ func wc() {
 		}
 	}
 }
-func uniq() {
+func Uniq() {
 	list := []string{"a", "b", "a", "a", "c", "d", "e", "f"}
 	first := list[0]
 	fmt.Printf("%s ", first)
@@ -88,7 +88,8 @@ func uniq() {
 //     $ nc 127.0.0.1 8053  # client side
 //     abc
 //     abc
-func echoserver() {
+// true loop by default!
+func EchoServer() {
 	l, err := net.Listen("tcp", "127.0.0.1:8053")
 	if err != nil {
 		fmt.Printf("Failure to listen: %s\n", err.Error())
@@ -114,10 +115,3 @@ func Echo(c net.Conn) {
 	}
 }
 
-func main() {
-	// dnslookup()
-	// psgrp()
-	// wc()
-	// uniq()
-	// echoserver() // true loop by default!
-}
