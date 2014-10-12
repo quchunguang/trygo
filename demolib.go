@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"reflect"
 	"regexp"
 	"runtime"
@@ -663,4 +664,186 @@ func DemoReflect() {
 
 	b := reflect.ValueOf(a).MethodByName("GetName").Call([]reflect.Value{})
 	fmt.Println(b[0])
+}
+
+func FakeTime() {
+	stop := time.After(5 * time.Second)
+	tick := time.NewTicker(1 * time.Second)
+	defer tick.Stop()
+	for {
+		select {
+		case <-tick.C:
+			fmt.Println(time.Now())
+		case <-stop:
+			return
+		}
+	}
+}
+
+func DemoSignal() {
+	f, err := ioutil.TempFile("", "test")
+	if err != nil {
+		panic(err)
+	}
+	defer os.Remove(f.Name())
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt)
+	fmt.Println("Before ctrl+c")
+	<-sig
+	fmt.Println("After ctrl+c")
+}
+
+func DemoSync4() {
+	var counter = struct {
+		sync.RWMutex
+		m map[string]int
+	}{m: make(map[string]int)}
+
+	counter.Lock()
+	counter.m["some_key"]++
+	counter.Unlock()
+
+	counter.RLock()
+	n := counter.m["some_key"]
+	counter.RUnlock()
+
+	fmt.Println("some_key:", n)
+}
+
+func DemoReflection() {
+	var r io.Reader
+	tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
+	if err != nil {
+		fmt.Println("err")
+	}
+	r = tty
+	fmt.Println(r)
+	var w io.Writer
+	w = r.(io.Writer)
+	fmt.Println(w)
+
+	var x float64 = 3.4
+	fmt.Println("type:", reflect.TypeOf(x))
+	v := reflect.ValueOf(x)
+	fmt.Println("type:", v.Type())
+	fmt.Println("kind is float64:", v.Kind() == reflect.Float64)
+	fmt.Println("value:", v.Float())
+	y := v.Interface().(float64) // y will have type float64.
+	fmt.Println(y)
+
+	var xx uint8 = 'x'
+	vv := reflect.ValueOf(xx)
+	fmt.Println("type:", vv.Type())                            // uint8.
+	fmt.Println("kind is uint8: ", vv.Kind() == reflect.Uint8) // true.
+	xx = uint8(vv.Uint())                                      // v.Uint returns a uint64.
+
+	type MyInt int
+	var xxx MyInt = 7
+	vvv := reflect.ValueOf(xxx)
+	fmt.Println("type:", vvv.Type())                        // uint8.
+	fmt.Println("kind is int: ", vvv.Kind() == reflect.Int) // true.
+
+	yyy := vvv.Interface().(MyInt)
+	fmt.Println(yyy)
+	fmt.Printf("value is %d\n", vvv.Interface())
+}
+
+func DemoReflection2() {
+	var x float64 = 3.4
+	p := reflect.ValueOf(&x) // Note: take the address of x.
+	fmt.Println("type of p:", p.Type())
+	fmt.Println("settability of p:", p.CanSet())
+	v := p.Elem()
+	fmt.Println("settability of v:", v.CanSet())
+	v.SetFloat(7.1)
+	fmt.Println(v.Interface())
+	fmt.Println(x)
+}
+
+func DemoReflection3() {
+	type T struct {
+		A int
+		B string
+	}
+	t := T{23, "skidoo"}
+	s := reflect.ValueOf(&t).Elem()
+	typeOfT := s.Type()
+	for i := 0; i < s.NumField(); i++ {
+		f := s.Field(i)
+		fmt.Printf("%d: %s %s = %v\n", i,
+			typeOfT.Field(i).Name, f.Type(), f.Interface())
+	}
+	s.Field(0).SetInt(77)
+	s.Field(1).SetString("Sunset Strip")
+	fmt.Println("t is now", t)
+}
+
+func DemoJson2() {
+	type Message struct {
+		Name string
+		Body string
+		Time int64
+	}
+	m := Message{"Alice", "Hello", 1294706395881547000}
+	b, err := json.Marshal(m)
+	if err != nil {
+		fmt.Println("errb, err := json.Marshal(m)")
+	}
+	fmt.Println(string(b))
+
+	var mm Message
+	json.Unmarshal(b, &mm)
+	fmt.Println(mm)
+
+	bb := []byte(`{"Name":"Bob","Food":"Pickle"}`)
+	var mmm Message
+	err = json.Unmarshal(bb, &mmm)
+	if err != nil {
+		fmt.Println("err")
+	}
+	fmt.Println(mmm)
+}
+func DemoJson3() {
+	b := []byte(`{"Name":"Wednesday","Age":6,"Parents":["Gomez","Morticia"]}`)
+	var f interface{}
+	err := json.Unmarshal(b, &f)
+	if err != nil {
+		fmt.Println("err")
+	}
+	m := f.(map[string]interface{})
+	for k, v := range m {
+		switch vv := v.(type) {
+		case string:
+			fmt.Println(k, "is string", vv)
+		case int:
+			fmt.Println(k, "is int", vv)
+		case []interface{}:
+			fmt.Println(k, "is an array:")
+			for i, u := range vv {
+				fmt.Println(i, u)
+			}
+		default:
+			fmt.Println(k, "is of a type I don't know how to handle")
+		}
+	}
+}
+
+func DemoJson4() {
+	dec := json.NewDecoder(os.Stdin)
+	enc := json.NewEncoder(os.Stdout)
+	for {
+		var v map[string]interface{}
+		if err := dec.Decode(&v); err != nil {
+			log.Println(err)
+			return
+		}
+		for k := range v {
+			if k != "Name" {
+				delete(v, k)
+			}
+		}
+		if err := enc.Encode(&v); err != nil {
+			log.Println(err)
+		}
+	}
 }

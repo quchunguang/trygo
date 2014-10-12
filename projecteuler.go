@@ -4,6 +4,7 @@ package trygo
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"os"
@@ -376,27 +377,19 @@ func PE11() int {
 }
 
 //////
-func getmap(n int) map[int]int {
-	ret := make(map[int]int)
-	return ret
-}
-func mergemap(a, b map[int]int) map[int]int {
-	return a
-}
-func calcprod(m map[int]int) int {
-	return 0
-}
 func PE12(N int) int {
-	var i, num int
-	for i = 1; i < 2; i++ {
-		num = i * (i + 1) / 2
-		products := mergemap(getmap(i), getmap(i+1))
-		products[2]--
-		if calcprod(products) > N {
-			return num
+	for i := 1; ; i++ {
+		s := 1
+		n := i * (i + 1) / 2
+		pfs := PrimeFactors(n)
+		for _, v := range pfs {
+			s *= v + 1
+		}
+		if s >= N {
+			// fmt.Println(n, s, pfs)
+			return n
 		}
 	}
-	return 0
 }
 
 //////
@@ -420,7 +413,7 @@ func BigNum(data string) []int64 {
 	return ret
 }
 
-// Sum two Big int created by BigNum
+// Sum two BigNums
 func BigSum(a, b []int64) []int64 {
 	if len(a) < len(b) {
 		a, b = b, a
@@ -445,11 +438,68 @@ func BigSum(a, b []int64) []int64 {
 	return ret
 }
 
-// Length of a Big int created by BigNum
+// Multiply BigNum with int
+func BigMulInt(a []int64, b int64) []int64 {
+	ret := BigNum("0")
+	s := BigSum(ret, a)
+	for b > 0 {
+		if b%2 == 1 {
+			ret = BigSum(ret, s)
+		}
+		s = BigSum(s, s)
+		b /= 2
+	}
+	return ret
+}
+
+// Multiply two BigNum
+func BigMul(a, b []int64) []int64 {
+	tmp := BigSum(a, BigNum("0"))
+	ret := BigNum("0")
+	for i := 0; i < len(b); i++ {
+		ret = BigSum(ret, BigMulInt(tmp, b[i]))
+		tmp = BigMulInt(tmp, 1e18)
+	}
+	return ret
+}
+
+// Convert BigNum to string
+func BigStr(a []int64) (ret string) {
+	for i := 0; i < len(a); i++ {
+		ret = fmt.Sprintf("%018d", a[i]) + ret
+	}
+	ret = strings.TrimLeft(ret, "0")
+	return
+}
+
+// Calculate N! and return BigNum
+func BigFact(N int) []int64 {
+	ret := BigNum("1")
+	for i := 2; i <= N; i++ {
+		ret = BigMulInt(ret, int64(i))
+	}
+	return ret
+}
+
+// Power n of BigNum a
+func BigPow(a []int64, n int64) []int64 {
+	ret := BigNum("1")
+	s := BigMul(ret, a)
+	for n > 0 {
+		if n%2 == 1 {
+			ret = BigMul(ret, s)
+		}
+		s = BigMul(s, s)
+		n /= 2
+	}
+	return ret
+}
+
+// Length of a BigNum created by BigNum
 func BigLen(a []int64) (ret int) {
+	var i int
 	ret = 18 * (len(a) - 1)
 	last := a[len(a)-1]
-	var i int
 	for i = 0; last > 0; i++ {
 		last /= 10
 	}
@@ -458,7 +508,7 @@ func BigLen(a []int64) (ret int) {
 }
 
 func PE13() string {
-	file, err := os.Open("data/data13.txt")
+	file, err := os.Open("data/PE13.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -502,11 +552,9 @@ func PE14(limit int64) int64 {
 }
 
 //////
-func PE16(N int) uint64 {
-	var a uint64
-	// bignum := make([]int64)
-	a = 1 << 63
-	return a + a
+func PE16(N int) int64 {
+	bignum := BigPow(BigNum("2"), int64(N))
+	return BigDigSum(bignum)
 }
 
 //////
@@ -686,6 +734,9 @@ func GenPrimes(max int) {
 
 // Generate prime factors and return as a map
 func PrimeFactors(n int) map[int]int {
+	if primes[len(primes)-1] < n {
+		GenPrimes(n * 2)
+	}
 	var pfmap = make(map[int]int)
 	for j := 0; n != 1; j++ {
 		for n%primes[j] == 0 {
@@ -697,11 +748,7 @@ func PrimeFactors(n int) map[int]int {
 }
 func PE47(n int) int {
 	ok := 0
-	GenPrimes(100)
 	for i := 4; ; i++ {
-		if primes[len(primes)-1] < i {
-			GenPrimes(i * 2)
-		}
 		if len(PrimeFactors(i)) != n {
 			ok = 0
 			continue
@@ -738,7 +785,7 @@ func StrsEquals(a, b []string) bool {
 	return true
 }
 
-func MapNumbersInt(a int) (ret []int) {
+func MapNumInts(a int) (ret []int) {
 	for a > 0 {
 		ret = append(ret, a%10)
 		a /= 10
@@ -746,8 +793,8 @@ func MapNumbersInt(a int) (ret []int) {
 	return
 }
 func IsPermutations(a, b int) bool {
-	ma := MapNumbersInt(a)
-	mb := MapNumbersInt(b)
+	ma := MapNumInts(a)
+	mb := MapNumInts(b)
 	sort.Ints(ma)
 	sort.Ints(mb)
 	return IntsEquals(ma, mb)
@@ -819,31 +866,24 @@ func Perm(list []int, i int, n int) {
 }
 
 //////
-func PowerInt(a, b int) int {
+func PowInt(a, b int) int {
 	var ret int = 1
 	for i := 0; i < b; i++ {
 		ret *= a
 	}
 	return ret
 }
-func PowerSum(nlist []int, m int) int {
+func PowSum(nlist []int, m int) int {
 	var sum int
 	for _, v := range nlist {
-		sum += PowerInt(v, m)
+		sum += PowInt(v, m)
 	}
 	return sum
 }
-func NumsInt(n int) (nlist []int) {
-	for n > 0 {
-		nlist = append(nlist, n%10)
-		n /= 10
-	}
-	return
-}
 func genlimit(n int) int {
 	for i := 1; ; i++ {
-		if PowerInt(9, n)*i < PowerInt(10, i-1) {
-			return PowerInt(10, i-1)
+		if PowInt(9, n)*i < PowInt(10, i-1) {
+			return PowInt(10, i-1)
 		}
 	}
 }
@@ -856,8 +896,8 @@ func SumInts(list []int) (sum int) {
 func PE30(m int) int {
 	var ret []int
 	for i := 10; i < genlimit(m); i++ {
-		nlist := NumsInt(i)
-		if i == PowerSum(nlist, m) {
+		nlist := MapNumInts(i)
+		if i == PowSum(nlist, m) {
 			ret = append(ret, i)
 		}
 	}
@@ -1040,5 +1080,447 @@ func RelativePrimes(n int) (ret []int) {
 // max(n / phi(n)) below N,
 // will be the max(phi(n)) below N appears the first time.
 func PE69(n int) (ret int) {
+	return
+}
+
+//////
+var triangles = []int{1, 3}
+
+func IsTriangle(N int) bool {
+	if N > triangles[len(triangles)-1] {
+		for i := len(triangles) + 1; triangles[len(triangles)-1] < N; i++ {
+			triangles = append(triangles, i*(i+1)/2)
+		}
+	}
+	if InInts(triangles, N) {
+		return true
+	}
+	return false
+}
+func SumIndex(word string) (sum int) {
+	for _, v := range word {
+		sum += int(v - 1<<6)
+	}
+	return sum
+}
+
+//////
+// file: "A","B","C", -> []string. Trailing comer MUST have!
+func CSW(filename string) (words []string) {
+	file, err := os.Open(filename)
+	defer file.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	reader := bufio.NewReader(file)
+	for {
+		line, err := reader.ReadString(',')
+		if err == io.EOF {
+			break
+		}
+		words = append(words, line[1:len(line)-2]) // "XXX",  -->  XXX
+	}
+	return
+}
+func PE42() (ret int) {
+	words := CSW("data/p042_words.txt")
+	for _, w := range words {
+		if IsTriangle(SumIndex(w)) {
+			ret++
+		}
+	}
+	return
+}
+
+//////
+type Point struct {
+	X, Y int
+}
+
+var Points []Point
+
+func GenPoints(N int) {
+	var (
+		Sb         int = 290797
+		Sn, Tx, Ty int
+	)
+	for n := 1; n <= N; n++ {
+		Sn = (Sb * Sb) % 50515093
+		Tx = (Sn % 2000) - 1000
+		Sb = Sn
+		Sn = (Sb * Sb) % 50515093
+		Ty = (Sn % 2000) - 1000
+		Sb = Sn
+		Points = append(Points, Point{Tx, Ty})
+	}
+}
+func IsConvex(ps []Point, p Point)   {}
+func InHole(ps []Point, p Point)     {}
+func Area(ps []Point) (area float64) { return 0.0 }
+func GenTri() chan [3]Point {
+	var c = make(chan [3]Point, 100)
+	go func() {
+		for i := 0; i < len(Points); i++ {
+			for j := i + 1; j < len(Points); j++ {
+				for k := j + 1; k < len(Points); k++ {
+					c <- [3]Point{Points[i], Points[j], Points[k]}
+				}
+			}
+		}
+		close(c)
+	}()
+	return c
+}
+func PE252() int {
+	var N int = 500
+	GenPoints(N)
+	s := 0
+	for _ = range GenTri() {
+		s++
+	}
+	fmt.Println(s)
+	return 0
+}
+
+//////
+func Factors(n int) (fs []int) {
+	for i := 1; i < n; i++ {
+		if n%i == 0 {
+			fs = append(fs, i)
+		}
+	}
+	return
+}
+func PE21(N int) (sum int) {
+	for a := 1; a <= N; a++ {
+		b := SumInts(Factors(a))
+		if SumInts(Factors(b)) == a && a != b {
+			// fmt.Println(a, b)
+			sum += a
+		}
+	}
+	return
+}
+
+//////
+func PE20(N int) (ret int) {
+	s := BigStr(BigFact(N))
+	for _, c := range s {
+		ret += int(c - 0x30)
+	}
+	return ret
+}
+
+//////
+func Comb(n, m int) int {
+	var p int = 1
+	var a, b int = m, n - m
+	if n-m < m {
+		a, b = b, a
+	}
+	for i := 1; i <= a; i++ {
+		p += p * b / i
+	}
+	return p
+}
+func PE15(N int) int {
+	return Comb(2*N, N)
+}
+
+//////
+func PE57S(N int) (ret int) {
+	var a, b int = 1, 2
+	for i := 2; i <= N; i++ {
+		a, b = b, 2*b+a
+		// fmt.Println(a+b, "/", b, len(strconv.Itoa(a+b)), len(strconv.Itoa(b)))
+		if len(strconv.Itoa(a+b)) > len(strconv.Itoa(b)) {
+			ret++
+		}
+	}
+	return
+}
+func PE57(N int) (ret int) {
+	a := BigNum("1")
+	b := BigNum("2")
+	for i := 2; i <= N; i++ {
+		c := b
+		b = BigSum(BigMulInt(b, 2), a)
+		a = c
+		if BigLen(BigSum(a, b)) > BigLen(b) {
+			ret++
+		}
+	}
+	// fmt.Println(BigStr(BigSum(a, b)), BigStr(b))
+	return
+}
+
+//////
+func DigSum(a int64) (ret int64) {
+	for a > 0 {
+		ret += a % 10
+		a /= 10
+	}
+	return
+}
+func BigDigSum(a []int64) (ret int64) {
+	for _, v := range a {
+		ret += DigSum(v)
+	}
+	return
+}
+
+func PE56(N int) (ret int) {
+	for a := 1; a < N; a++ {
+		for b := 1; b < N; b++ {
+			x := BigPow(BigNum(strconv.Itoa(a)), int64(b))
+			s := int(BigDigSum(x))
+			if s > ret {
+				ret = s
+			}
+		}
+	}
+	return
+}
+
+//////
+func FindPathMax(data [][]int, i, j int) (ret int) {
+	if i == len(data)-1 {
+		return data[i][j]
+	}
+	l := FindPathMax(data, i+1, j)
+	r := FindPathMax(data, i+1, j+1)
+	if l > r {
+		ret = l + data[i][j]
+	} else {
+		ret = r + data[i][j]
+	}
+	return
+}
+
+type datai struct {
+	sm    int  // Biggest sum
+	right bool // Previous item go to here from right path?(or left)
+}
+
+func FindPathMax2(data [][]int) (ret int) {
+	// Create temp data structure
+	N := len(data)
+	sd := make([][]datai, N)
+	for i := 0; i < N; i++ {
+		sd[i] = make([]datai, i+1)
+	}
+
+	// Calculate sd[i][j], the biggest sum data[0][0] -> data[i][j]
+	sd[0][0].sm = data[0][0]
+	for i := 1; i < N; i++ {
+		//j==0
+		sd[i][0].sm = sd[i-1][0].sm + data[i][0]
+		sd[i][0].right = true
+		//j==1..i-1
+		for j := 1; j < i; j++ {
+			if sd[i-1][j-1].sm > sd[i-1][j].sm {
+				sd[i][j].sm = sd[i-1][j-1].sm + data[i][j]
+				sd[i][j].right = false
+			} else {
+				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
+				sd[i][j].right = true
+			}
+		}
+		//j==i
+		sd[i][i].sm = sd[i-1][i-1].sm + data[i][i]
+		sd[i][i].right = false
+	}
+
+	// Get result
+	rets := make([]int, N)
+	for j := 0; j < N; j++ {
+		if sd[N-1][j].sm > ret {
+			ret = sd[N-1][j].sm
+			rets[N-1] = j
+		}
+	}
+	for i := N - 2; i >= 0; i-- {
+		if sd[i+1][rets[i+1]].right {
+			rets[i] = rets[i+1]
+		} else {
+			rets[i] = rets[i+1] - 1
+		}
+	}
+
+	// Print result
+	for i := 0; i < N; i++ {
+		fmt.Printf("%d ", data[i][rets[i]])
+	}
+	fmt.Println()
+	return
+}
+func maxpathsum(filepath string, N int) (ret int) {
+	// Create 2D slice
+	data := make([][]int, N)
+	for i := 0; i < N; i++ {
+		data[i] = make([]int, i+1)
+	}
+
+	// Read file and fill slice
+	file, err := os.Open(filepath)
+	defer file.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	reader := bufio.NewReader(file)
+	i := 0
+	for {
+		line, err := reader.ReadString('\n')
+		if err == io.EOF {
+			break
+		}
+		la := strings.Fields(line)
+		for j, item := range la {
+			data[i][j], _ = strconv.Atoi(item)
+		}
+		i++
+	}
+	// Find biggest path
+	// ret = FindPathMax(data, 0, 0)
+	ret = FindPathMax2(data)
+	return
+}
+func PE18() int {
+	return maxpathsum("data/PE18.txt", 15)
+}
+func PE67() int {
+	return maxpathsum("data/p067_triangle.txt", 100)
+}
+
+//////
+func ScoreWord(word string) (ret int) {
+	for _, c := range word {
+		ret += int(c - 0x40)
+	}
+	return
+}
+
+//////
+func PE22() (ret int) {
+	words := CSW("data/p022_names.txt")
+	sort.Strings(words)
+
+	for i, w := range words {
+		ret += (i + 1) * ScoreWord(w)
+	}
+	return
+}
+
+//////
+var abundants []int
+
+func GenAbundants(N int) {
+	for i := 2; i <= N; i++ {
+		if SumInts(Factors(i)) > i {
+			abundants = append(abundants, i)
+		}
+	}
+}
+
+func PE23() (ret int) {
+	GenAbundants(28123)
+	// All integers > 28123 can be written as the sum of two abundant numbers.
+	for i := 1; i <= 28123; i++ {
+		for _, ab := range abundants {
+			if ab >= i {
+				// Non-abundant sum found
+				ret += i
+				break
+			}
+			if InInts(abundants, i-ab) {
+				break
+			}
+		}
+	}
+	return
+}
+
+//////
+type DivMod struct {
+	Div, Mod int
+}
+
+func InDivMods(dms []DivMod, dm DivMod) int {
+	for i, v := range dms {
+		if v.Div == dm.Div && v.Mod == dm.Mod {
+			return i
+		}
+	}
+	return -1
+}
+func PE26(N int) (ret int) {
+	var fullprimes []int
+
+	var dms []DivMod
+	var maxlen int
+	for n := 2; n < N; n++ {
+		m := 1
+		dms = dms[:0]
+		for {
+			m *= 10
+			if m%n == 0 {
+				break
+			}
+			dm := DivMod{m / n, m % n}
+			if index := InDivMods(dms, dm); index >= 0 {
+				length := len(dms) - index
+				if length == n-1 {
+					fullprimes = append(fullprimes, n)
+				}
+				if length > maxlen {
+					maxlen = length
+					ret = n
+					// fmt.Println(n, maxlen, dms)
+				}
+				break
+			}
+			dms = append(dms, dm)
+			m %= n
+		}
+	}
+
+	// Question
+	// * For 1/n, max recurring cycle length is n-1.
+	// * All max recurring cycle number, are primes.
+	// * Not all primes are recurring cycle numbers.
+	// color reference ~/bin/colorcat.sh
+	GenPrimes(N)
+	var r, yy int
+	for _, v := range primes {
+		if InInts(fullprimes, v) {
+			fmt.Printf("%s%4d%s ", CRR, v, CRD)
+			yy++
+		} else {
+			fmt.Printf("%4d ", v)
+		}
+
+		r++
+		if r%32 == 0 {
+			fmt.Printf(" ρ = %4.2f\n", float64(yy)/float64(r))
+		}
+	}
+	fmt.Println()
+
+	return
+}
+
+//////
+func PE27(N int) (ret int) {
+	GenPrimes(N*N + N + 41)
+	for n := 0; n <= N; n++ {
+		p := n*n + n + 41
+		fmt.Println(n, p, InInts(primes, p))
+	}
+	return
+}
+
+//////
+func PE28(N int) (ret int) {
 	return
 }
