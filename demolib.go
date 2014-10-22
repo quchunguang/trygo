@@ -3,10 +3,12 @@ package trygo
 import (
 	"bufio"
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/alphazero/Go-Redis"
 	"github.com/deckarep/golang-set"
+	"html"
 	"image"
 	"image/color"
 	"image/jpeg"
@@ -14,6 +16,8 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/big"
+	"mime"
 	"net"
 	"net/http"
 	"os"
@@ -24,8 +28,10 @@ import (
 	"runtime"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"syscall"
+	"text/tabwriter"
 	"time"
 )
 
@@ -846,4 +852,144 @@ func DemoJson4() {
 			log.Println(err)
 		}
 	}
+}
+func DemoBase64() {
+	// A Buffer can turn a string or a []byte into an io.Reader.
+	buf := bytes.NewBufferString("R29waGVycyBydWxlIQ==")
+	dec := base64.NewDecoder(base64.StdEncoding, buf)
+	io.Copy(os.Stdout, dec)
+}
+func DemoBig() {
+	i := new(big.Int)
+	i.SetString("12345678901234567890", 10)
+	fmt.Println(i)
+
+	r := new(big.Rat)
+	r.SetString("355/113")
+	fmt.Println(r.FloatString(7))
+}
+func DemoHtml() {
+	fmt.Println(html.EscapeString("<html>"))
+}
+func DemoSplit() {
+	var a []byte
+	a = strconv.AppendQuote(a, "abc")
+	fmt.Println(string(a))
+
+	s := "a ,b   b, ccc"
+	sa := strings.Split(s, ",")
+	for i, _ := range sa {
+		sa[i] = strings.TrimSpace(sa[i])
+	}
+	fmt.Println(sa)
+}
+func DemoTime() {
+	c := time.Tick(1 * time.Second)
+	for now := range c {
+		fmt.Printf("%v\n", now)
+	}
+}
+func DemoTabwriter() {
+	w := new(tabwriter.Writer)
+
+	// Format in tab-separated columns with a tab stop of 8.
+	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
+	fmt.Fprintln(w, "a\tb\tc\td\t.")
+	fmt.Fprintln(w, "123\t12345\t1234567\t123456789\t.")
+	fmt.Fprintln(w)
+	w.Flush()
+
+	// Format right-aligned in space-separated columns of minimal width 5
+	// and at least one blank of padding (so wider column entries do not
+	// touch each other).
+	w.Init(os.Stdout, 5, 0, 1, ' ', tabwriter.AlignRight)
+	fmt.Fprintln(w, "a\tb\tc\td\t.")
+	fmt.Fprintln(w, "123\t12345\t1234567\t123456789\t.")
+	fmt.Fprintln(w)
+	w.Flush()
+}
+
+//////
+type person struct {
+	Name string
+	Age  int
+}
+
+func (p person) String() string {
+	return fmt.Sprintf("%s: %d", p.Name, p.Age)
+}
+
+// ByAge implements sort.Interface for []person based on
+// the Age field.
+type ByAge []person
+
+func (a ByAge) Len() int           { return len(a) }
+func (a ByAge) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByAge) Less(i, j int) bool { return a[i].Age < a[j].Age }
+
+func DemoSort2() {
+	people := []person{
+		{"Bob", 31},
+		{"John", 42},
+		{"Michael", 17},
+		{"Jenny", 26},
+	}
+
+	sort.Sort(ByAge(people))
+	fmt.Println(people)
+}
+func DemoMime() {
+	s := mime.TypeByExtension(".c")
+	fmt.Println(s)
+}
+func DemoRegexp2() {
+	fmt.Println(regexp.Match("H.* ", []byte("Hello World!")))
+
+	r := bytes.NewReader([]byte("Hello World!"))
+	fmt.Println(regexp.MatchReader("H.* ", r))
+
+	fmt.Println(regexp.MatchString("H.* ", "Hello World!"))
+	fmt.Println(regexp.QuoteMeta("(?P:Hello) [a-z]"))
+
+	reg, err := regexp.Compile(`\w+`)
+	fmt.Printf("%q,%v\n", reg.FindString("Hello World!"), err)
+	reg, err = regexp.CompilePOSIX(`[[:word:]]+`)
+	fmt.Printf("%q,%v\n", reg.FindString("Hello World!"), err)
+	reg = regexp.MustCompile(`\w+`)
+	fmt.Println(reg.FindString("Hello World!"))
+	reg = regexp.MustCompile(`\w+`)
+	fmt.Printf("%q\n", reg.FindAll([]byte("Hello World!"), -1))
+
+	reg = regexp.MustCompile(`(\w+),(\w+)`)
+	src := "Golang,World!"
+	dst := []byte("Say: ")
+	template := "Hello $1, Hello $2"
+	match := reg.FindStringSubmatchIndex(src)
+	fmt.Printf("%q\n", reg.ExpandString(dst, template, src, match))
+
+	text := `Hello World, 123 Go!`
+	pattern := `(?U)H[\w\s]+o`
+	reg = regexp.MustCompile(pattern)
+	fmt.Printf("%q\n", reg.FindString(text))
+	reg.Longest()
+	fmt.Printf("%q\n", reg.FindString(text))
+
+	reg = regexp.MustCompile(`(?U)(?:Hello)(\s+)(\w+)`)
+	fmt.Println(reg.NumSubexp())
+
+	b := []byte("Hello World, 123 Go!")
+	reg = regexp.MustCompile(`(Hell|G)o`)
+	rep := []byte("${1}ooo")
+	fmt.Printf("%q\n", reg.ReplaceAll(b, rep))
+	// "Hellooo World, 123 Gooo!"
+
+	s := "Hello World!"
+	reg = regexp.MustCompile("(H)ello")
+	rep2 := "$0$1"
+	fmt.Printf("%s\n", reg.ReplaceAllString(s, rep2))
+	// HelloH World!
+	fmt.Printf("%s\n", reg.ReplaceAllStringFunc(s,
+		func(b string) string {
+			return b + "$1"
+		}))
 }
