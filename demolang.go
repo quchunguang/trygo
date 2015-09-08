@@ -4,7 +4,7 @@ package trygo
 #include <stdio.h>
 
 */
-import "C" // this MUST be single sentence with magic omments above !!!
+//import "C" // this MUST be single sentence with magic omments above !!!
 import (
 	"bytes"
 	"fmt"
@@ -1167,10 +1167,10 @@ func DemoGoroutine2() {
 	fmt.Println(gomaxprocs)
 }
 
-func DemoCgo() {
-	C.puts(C.CString("Hello, 世界\n"))
-	fmt.Println("hi")
-}
+// func DemoCgo() {
+// 	C.puts(C.CString("Hello, 世界\n"))
+// 	fmt.Println("hi")
+// }
 
 //////
 func DemoFunc2() {
