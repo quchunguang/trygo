@@ -482,7 +482,7 @@ func payload() {
 	fmt.Println("in payload()")
 }
 func DemoSync3() {
-	runtime.GOMAXPROCS(4) // MUST
+	runtime.GOMAXPROCS(4) // MUST only go version <= 1.4
 	waitchan := make(chan int)
 	for i := 0; i < 10; i++ {
 		go func() {

@@ -1049,7 +1049,7 @@ func mult2(f e) e {
 	case int:
 		return f.(int) * 2
 	case string:
-		return f.(string) + f.(string) + f.(string) + f.(string)
+		return f.(string) + f.(string)
 	}
 	return f
 }
@@ -1198,7 +1198,7 @@ func walkEqual(i *int) walkFn {
 	return walkEqual
 }
 
-func DemoTyperecursive() {
+func DemoTypeRecursive() {
 	fn2, progress := walkEqual, 0
 	for i := 0; i < 20; i++ {
 		fn2 = fn2(&progress)
