@@ -13,7 +13,7 @@ func main() {
 	var err error
 
 	file = xlsx.NewFile()
-	sheet = file.AddSheet("Sheet1")
+	sheet, _ = file.AddSheet("Sheet1")
 	row = sheet.AddRow()
 	cell = row.AddCell()
 	cell.Value = "I am a cell!"
