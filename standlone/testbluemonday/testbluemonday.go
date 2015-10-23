@@ -25,7 +25,6 @@ This is a simple **common style** [markdown](https://daringfireball.net/projects
 
 	// Query HTML using jquery style goquery
 	buf := bytes.NewBuffer(html)
-	goquery.NewDocument()
 	query, err := goquery.NewDocumentFromReader(buf)
 	if err != nil {
 		panic(err)
