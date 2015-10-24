@@ -6,19 +6,13 @@ import (
 )
 
 func main() {
-	var file *xlsx.File
-	var sheet *xlsx.Sheet
-	var row *xlsx.Row
-	var cell *xlsx.Cell
-	var err error
-
-	file = xlsx.NewFile()
-	sheet, _ = file.AddSheet("Sheet1")
-	row = sheet.AddRow()
-	cell = row.AddCell()
+	file := xlsx.NewFile()
+	sheet, _ := file.AddSheet("Sheet1")
+	row := sheet.AddRow()
+	cell := row.AddCell()
 	cell.Value = "I am a cell!"
-	err = file.Save("MyXLSXFile.xlsx")
-	if err != nil {
+
+	if err := file.Save("MyXLSXFile.xlsx"); err != nil {
 		fmt.Printf(err.Error())
 	}
 }
