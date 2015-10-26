@@ -29,6 +29,9 @@ func main() {
 	}
 	fmt.Print("\n\n")
 
+	// Output: 4
+	// That is, 3 actual nodes plus the root node.
+	// This is because 1 node is required for the "tri" prefix and just 2 additional nodes for "e" and "al":
 	var nodes int = 0
 	countTrieNodes(trie, &nodes)
 	fmt.Printf("Number of allocated nodes: %d\n", nodes)
