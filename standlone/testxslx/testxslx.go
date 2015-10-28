@@ -7,7 +7,7 @@ import (
 
 func main() {
 	file := xlsx.NewFile()
-	sheet, _ := file.AddSheet("Sheet1")
+	sheet := file.AddSheet("Sheet1")
 	row := sheet.AddRow()
 	cell := row.AddCell()
 	cell.Value = "I am a cell!"
