@@ -1,0 +1,22 @@
+<html>
+<head>
+</head>
+<body>
+
+    <ul>
+      <li>编号: {{.Id}}</li>
+      <li>姓名: {{.Name}}</li>
+      <li>年龄: {{.Age}}</li>
+      <li>电邮:
+        <ul>
+            {{with .Emails}}
+            {{range .}}
+            <li>{{.}}</li>
+            {{end}}
+            {{end}}
+        </ul>
+      </li>
+    </ul>
+
+</body>
+</html>
