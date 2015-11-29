@@ -80,8 +80,8 @@ func DemoDefine() {
 	fmt.Println(divmod(10, 3))
 	fmt.Println(x, y, z, c, python, java)
 	fmt.Println(m, n, p, World, Truth)
-	fmt.Println(Big, Small, needInt(Small), needFloat(Small),
-		needFloat(Big))
+	fmt.Println( //Big,
+		Small, needInt(Small), needFloat(Small), needFloat(Big))
 }
 
 func DemoFor() {
