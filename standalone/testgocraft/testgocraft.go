@@ -7,12 +7,23 @@ import (
 	"strings"
 )
 
+type User struct {
+	nickname string
+	login    int
+}
+
 type Context struct {
 	HelloCount int
+	User       *User
+}
+
+// Pretend like this is defined. It reads a session cookie and returns a *User or nil.
+func userFromSession(r *web.Request) *User {
+	return &User{"kk", 20}
 }
 
 func (c *Context) UserRequired(rw web.ResponseWriter, r *web.Request, next web.NextMiddlewareFunc) {
-	user := userFromSession(r) // Pretend like this is defined. It reads a session cookie and returns a *User or nil.
+	user := userFromSession(r)
 	if user != nil {
 		c.User = user
 		next(rw, r)
