@@ -19,8 +19,8 @@ const indexPage = `
 `
 
 func indexPageHandler(response http.ResponseWriter, request *http.Request) {
-	nickname, _ := getSession(request)
-	if nickname != "" {
+	username, nickname, login := getSession(request)
+	if username != "" && login > 0 {
 		fmt.Fprintf(response, indexPage, nickname)
 	} else {
 		http.Redirect(response, request, "/login", 302)
@@ -37,8 +37,8 @@ const internalPage = `
 `
 
 func internalPageHandler(response http.ResponseWriter, request *http.Request) {
-	nickname, _ := getSession(request)
-	if nickname != "" {
+	username, nickname, login := getSession(request)
+	if username != "" && login > 0 {
 		fmt.Fprintf(response, internalPage, nickname)
 	} else {
 		http.Redirect(response, request, "/login", 302)
@@ -58,10 +58,10 @@ const loginForm = `
 
 type User struct {
 	Id       bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	Login    float64       `json:"login"`
-	Nickname string        `json:"nickname"`
-	Password string        `json:"password"`
-	Username string        `json:"username"`
+	Login    int           `json:"login"`    // 0: no right, >0: common right
+	Nickname string        `json:"nickname"` // display name
+	Username string        `json:"username"` // login name
+	Password string        `json:"password"` // login password
 }
 
 func connect() (session *mgo.Session) {
@@ -89,8 +89,8 @@ func checkUser(username, password string) *User {
 }
 
 func loginGetHandler(response http.ResponseWriter, request *http.Request) {
-	nickname, _ := getSession(request)
-	if nickname != "" {
+	username, _, login := getSession(request)
+	if username != "" && login > 0 {
 		http.Redirect(response, request, "/", 302)
 	} else {
 		fmt.Fprintf(response, loginForm)
@@ -98,11 +98,11 @@ func loginGetHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func loginPostHandler(response http.ResponseWriter, request *http.Request) {
-	name := request.FormValue("name")
-	pass := request.FormValue("password")
+	username := request.FormValue("name")
+	password := request.FormValue("password")
 	redirectTarget := "/login"
-	if name != "" && pass != "" {
-		if user := checkUser(name, pass); user != nil {
+	if username != "" && password != "" {
+		if user := checkUser(username, password); user != nil {
 			setSession(*user, response)
 			redirectTarget = "/"
 		}
@@ -121,8 +121,9 @@ var cookieHandler = securecookie.New(
 
 func setSession(user User, response http.ResponseWriter) {
 	value := map[string]string{
+		"username": user.Username,
 		"nickname": user.Nickname,
-		"login":    strconv.Itoa(int(user.Login)),
+		"login":    strconv.Itoa(user.Login),
 	}
 	if encoded, err := cookieHandler.Encode("session", value); err == nil {
 		cookie := &http.Cookie{
@@ -134,12 +135,15 @@ func setSession(user User, response http.ResponseWriter) {
 	}
 }
 
-func getSession(request *http.Request) (nickname, login string) {
+func getSession(request *http.Request) (username, nickname string, login int) {
 	if cookie, err := request.Cookie("session"); err == nil {
 		cookieValue := make(map[string]string)
 		if err = cookieHandler.Decode("session", cookie.Value, &cookieValue); err == nil {
+			if login, err = strconv.Atoi(cookieValue["login"]); err != nil {
+				return
+			}
+			username = cookieValue["username"]
 			nickname = cookieValue["nickname"]
-			login = cookieValue["login"]
 		}
 	}
 	return
