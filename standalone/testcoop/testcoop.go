@@ -19,9 +19,10 @@ func main() {
 
 	done2 := coop.Timeout(5*time.Second, func() {
 		time.Sleep(time.Hour)
-		fmt.Println("Timeout()")
+		fmt.Println("Wont happen")
 	})
 	<-done2 // will return false, because timeout occurred
+	fmt.Println("Timeout()")
 
 	printFn := func() {
 		fmt.Println("All()")
@@ -34,6 +35,7 @@ func main() {
 	<-coop.AllWithThrottle(2, printFn2, printFn2, printFn2, printFn2)
 
 	<-coop.Replicate(5, func() {
+		time.Sleep(time.Second)
 		fmt.Println("Replicate()")
 	})
 }

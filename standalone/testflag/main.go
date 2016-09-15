@@ -6,6 +6,12 @@ import (
 )
 
 func main() {
+	flag.Usage = func() {
+		fmt.Println("............................")
+		flag.PrintDefaults()
+		fmt.Println("............................")
+	}
+
 	var times int
 	flag.IntVar(&times, "n", 0, "Repeat times")
 	flag.Parse()
