@@ -1,0 +1,76 @@
+<html>
+
+<head>
+    <title>golang</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/tether/1.2.0/css/tether.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Get data from server using js</h2>
+        <br/>
+        <ul class="list-group"></ul>
+        <br/>
+        <button id="update" class="btn btn-info" type="button">Update</button>
+        <br/>
+        <br/>
+        <h2>Get data from server using golang template</h2>
+        <table class="table">
+            <tr>
+                <th>Nickname</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Login</th>
+            </tr>
+            {{ range .users }}
+            <tr>
+                <td>{{ .Nickname }}</td>
+                <td>{{ .Username }}</td>
+                <td>{{ .Password }}</td>
+                <td>{{ .Login }}</td>
+            </tr>
+            {{ end }}
+        </table>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/tether/1.2.0/js/tether.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    $(function() {
+        // var myNewElement = $('<button type="button" class="btn btn-success">New element</button>');
+        // myNewElement.appendTo(".container");
+        // myNewElement.clone().appendTo(".container");
+        update();
+    });
+
+    function update() {
+        $.getJSON("static/data.json", function(data) {
+            $.each(data, function(key, val) {
+                // var ee = document.createElement('li');
+                // $(ee).addClass('list-group-item').text(val);
+
+                // var e = $("<li/>", {
+                //     "class": "list-group-item"
+                // });
+                // e.text(val);
+                // $(".list-group").append(e);
+
+                var e = $('<li/>');
+                e.addClass('list-group-item').text(val);
+                if (key == "two") {
+                    e.addClass('active');
+                }
+                $(".list-group").append(e);
+            });
+        });
+    }
+
+    $("#update").click(function() {
+        $(".list-group").empty();
+        update();
+    });
+    </script>
+</body>
+
+</html>

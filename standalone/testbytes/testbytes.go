@@ -1,14 +1,25 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"os"
+	"github.com/labstack/gommon/bytes"
 )
 
 func main() {
-	var b bytes.Buffer
-	b.Write([]byte("Hello "))
-	fmt.Fprint(&b, "world!")
-	b.WriteTo(os.Stdout)
+	// B
+	b := bytes.Format(515)
+	fmt.Println(b)
+
+	// MB
+	b = bytes.Format(13231323)
+	fmt.Println(b)
+
+	// Exact
+	b = bytes.Format(1000 * 1000 * 1000)
+	fmt.Println(b)
+
+	// Binary prefix
+	bytes.BinaryPrefix(true)
+	b = bytes.Format(1323)
+	fmt.Println(b)
 }

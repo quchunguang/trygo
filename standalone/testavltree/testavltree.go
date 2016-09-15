@@ -32,8 +32,9 @@ func main() {
 	fmt.Println("Find 11(not exist): ", t.Find(11))
 	fmt.Println("Height:             ", t.Height())
 
-	t.Do(func(v interface{}) {
+	t.Do(func(v interface{}) bool {
 		fmt.Print(v.(int), " -> ")
+		return true
 	})
 	fmt.Print("\n\n")
 
@@ -42,8 +43,9 @@ func main() {
 	st.Add("add 1")
 	st.Add("add 3")
 	st.Add("add 2")
-	st.Do(func(v string) {
+	st.Do(func(v string) bool {
 		fmt.Println(v)
+		return true
 	})
 	fmt.Println("Height: ", st.Height())
 	fmt.Println()
@@ -53,8 +55,9 @@ func main() {
 	pt.Add(avltree.Pair{"b", 5})
 	pt.Add(avltree.Pair{"a", 9})
 	pt.Add(avltree.Pair{"c", 3})
-	pt.Do(func(v avltree.Pair) {
+	pt.Do(func(v avltree.Pair) bool {
 		fmt.Println(v.Key, " -> ", v.Value)
+		return true
 	})
 
 	// Object AVL tree
@@ -71,7 +74,8 @@ func main() {
 	if dupe {
 		fmt.Println("Key exist:", ov)
 	}
-	ot.Do(func(v interface{}) {
+	ot.Do(func(v interface{}) bool {
 		fmt.Println(v.(MyObject))
+		return true
 	})
 }
