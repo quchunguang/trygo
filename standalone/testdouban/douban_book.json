@@ -1,0 +1,79 @@
+{
+    "alt": "http://book.douban.com/subject/1220562/",
+    "alt_title": "",
+    "author": [
+        "[日] 片山恭一"
+    ],
+    "author_intro": "",
+    "binding": "平装",
+    "catalog": "\n      ",
+    "id": "1220562",
+    "image": "https://img1.doubanio.com/mpic/s1747553.jpg",
+    "images": {
+        "large": "https://img1.doubanio.com/lpic/s1747553.jpg",
+        "medium": "https://img1.doubanio.com/mpic/s1747553.jpg",
+        "small": "https://img1.doubanio.com/spic/s1747553.jpg"
+    },
+    "isbn10": "7543632608",
+    "isbn13": "9787543632608",
+    "origin_title": "",
+    "pages": "180",
+    "price": "15.00元",
+    "pubdate": "2005-1",
+    "publisher": "青岛出版社",
+    "rating": {
+        "average": "7.0",
+        "max": 10,
+        "min": 0,
+        "numRaters": 348
+    },
+    "subtitle": "",
+    "summary": "那一年，是听莫扎特、钓鲈鱼和家庭破裂的一年。说到家庭破裂，母亲怪自己当初没有找到好男人，父亲则认为当时是被狐狸精迷住了眼，失常的是母亲，但出问题的是父亲……。",
+    "tags": [
+        {
+            "count": 137,
+            "name": "片山恭一",
+            "title": "片山恭一"
+        },
+        {
+            "count": 64,
+            "name": "日本",
+            "title": "日本"
+        },
+        {
+            "count": 61,
+            "name": "日本文学",
+            "title": "日本文学"
+        },
+        {
+            "count": 38,
+            "name": "小说",
+            "title": "小说"
+        },
+        {
+            "count": 32,
+            "name": "满月之夜白鲸现",
+            "title": "满月之夜白鲸现"
+        },
+        {
+            "count": 15,
+            "name": "爱情",
+            "title": "爱情"
+        },
+        {
+            "count": 8,
+            "name": "純愛",
+            "title": "純愛"
+        },
+        {
+            "count": 8,
+            "name": "外国文学",
+            "title": "外国文学"
+        }
+    ],
+    "title": "满月之夜白鲸现",
+    "translator": [
+        "豫人"
+    ],
+    "url": "http://api.douban.com/v2/book/1220562"
+}
