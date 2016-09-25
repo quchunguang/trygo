@@ -1,10 +1,16 @@
-// Linked ring (with head node) and Josephus problem
+// 3.9 Linked ring without head
 // Each node arrowed to its left node,
-//   9->8->7->6->5->4->3->2->1->head->(9)
+//   1->2->3->4->5->6->7->8->9->(1)
+//
+// Josephus problem
+// Reduce one every count to M, till leave one to be the leader
+//   Ex., when M=5, we get 5->1->7->4->3->6->9->2->(8), 8 is the leader.
 package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 )
 
 type Node struct {
@@ -13,38 +19,33 @@ type Node struct {
 }
 
 func main() {
-	var head, tmp *Node
+	var last, tmp *Node
 
-	// head node not use !!!
-	head = new(Node)
-	head.item = -1
-	head.next = head
+	// first one
+	last = &Node{1, nil}
+	last.next = last
 
 	// build ring
-	for i := 1; i < 10; i++ {
-		tmp = new(Node)
-		tmp.item = i
-		tmp.next = head.next
-		head.next = tmp
+	for i := 2; i < 10; i++ {
+		tmp = &Node{i, last.next}
+		last.next = tmp
+		last = tmp
 	}
 
 	// output ring
-	for tmp := head.next; tmp != head; tmp = tmp.next {
-		fmt.Print(tmp.item)
-		fmt.Print("->")
+	for tmp = last.next; tmp != last; tmp = tmp.next {
+		fmt.Printf("%d->", tmp.item)
 	}
-	fmt.Println()
+	fmt.Println(tmp.item) // output last one
 
 	// Josephus reduce
-	// remove head
-	var first *Node
-	for first = head; first.next != head; first = first.next {
+	M, _ := strconv.Atoi(os.Args[1])
+	for tmp = last; tmp != tmp.next; {
+		for i := 1; i < M; i++ {
+			tmp = tmp.next
+		}
+		fmt.Printf("%d->", tmp.next.item)
+		tmp.next = tmp.next.next
 	}
-	first.next = head.next
-
-	for tmp := first.next; tmp != first; tmp = tmp.next {
-		fmt.Print(tmp.item)
-		fmt.Print("->")
-	}
-	fmt.Println()
+	fmt.Printf("(%d)\n", tmp.item) // found the leader
 }
