@@ -10,7 +10,7 @@ pi@host$ sudo apt-get install postgresql
 Create database and its account
 -------------------------------
 
-Notice: user/password must be same with that in OS !!!
+Notice: user/password must match exist accounts in OS !!!
 
 pi@host$ sudo -u postgres psql -U postgres
 CREATE USER pi WITH PASSWORD 'xxxxxx';
@@ -79,20 +79,19 @@ func main() {
 		return
 	}
 
-	dbinfo := fmt.Sprintf("postgres://%s?sslmode=disable",
-		db_conn)
+	dbinfo := fmt.Sprintf("postgres://%s?sslmode=disable", db_conn)
 	db, err := sql.Open("postgres", dbinfo)
 	checkErr(err)
 	defer db.Close()
 
-	fmt.Println("# Inserting values")
+	fmt.Println("\n# Inserting values")
 
 	var lastInsertId int
-	err = db.QueryRow("INSERT INTO userinfo(username,departname,created) VALUES($1,$2,$3) returning uid;", "astaxie", "研发部门", "2012-12-09").Scan(&lastInsertId)
+	err = db.QueryRow("INSERT INTO userinfo(username,departname,created) VALUES($1,$2,$3) RETURNING  uid;", "astaxie", "研发部门", "2012-12-09").Scan(&lastInsertId)
 	checkErr(err)
 	fmt.Println("last inserted id =", lastInsertId)
 
-	fmt.Println("# Updating")
+	fmt.Println("\n# Updating")
 	stmt, err := db.Prepare("update userinfo set username=$1 where uid=$2")
 	checkErr(err)
 
@@ -104,7 +103,7 @@ func main() {
 
 	fmt.Println(affect, "rows changed")
 
-	fmt.Println("# Querying")
+	fmt.Println("\n# Querying")
 	rows, err := db.Query("SELECT * FROM userinfo")
 	checkErr(err)
 
@@ -119,7 +118,7 @@ func main() {
 		fmt.Printf("%3v | %8v | %6v | %6v\n", uid, username, department, created)
 	}
 
-	fmt.Println("# Deleting")
+	fmt.Println("\n# Deleting")
 	stmt, err = db.Prepare("delete from userinfo where uid=$1")
 	checkErr(err)
 

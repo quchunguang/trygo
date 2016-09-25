@@ -1,0 +1,119 @@
+
+state 0
+	$accept: .goal $end 
+
+	'{'  shift 2
+	.  error
+
+	goal  goto 1
+
+state 1
+	$accept:  goal.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	goal:  '{'.pairs '}' 
+
+	KEY  shift 5
+	.  error
+
+	pair  goto 4
+	pairs  goto 3
+
+state 3
+	goal:  '{' pairs.'}' 
+	pairs:  pairs.'|' pair 
+
+	'}'  shift 6
+	'|'  shift 7
+	.  error
+
+
+state 4
+	pairs:  pair.    (2)
+
+	.  reduce 2 (src line 32)
+
+
+state 5
+	pair:  KEY.'=' VAL 
+	pair:  KEY.'=' '{' pairs '}' 
+
+	'='  shift 8
+	.  error
+
+
+state 6
+	goal:  '{' pairs '}'.    (1)
+
+	.  reduce 1 (src line 26)
+
+
+state 7
+	pairs:  pairs '|'.pair 
+
+	KEY  shift 5
+	.  error
+
+	pair  goto 9
+
+state 8
+	pair:  KEY '='.VAL 
+	pair:  KEY '='.'{' pairs '}' 
+
+	VAL  shift 10
+	'{'  shift 11
+	.  error
+
+
+state 9
+	pairs:  pairs '|' pair.    (3)
+
+	.  reduce 3 (src line 37)
+
+
+state 10
+	pair:  KEY '=' VAL.    (4)
+
+	.  reduce 4 (src line 42)
+
+
+state 11
+	pair:  KEY '=' '{'.pairs '}' 
+
+	KEY  shift 5
+	.  error
+
+	pair  goto 4
+	pairs  goto 12
+
+state 12
+	pairs:  pairs.'|' pair 
+	pair:  KEY '=' '{' pairs.'}' 
+
+	'}'  shift 13
+	'|'  shift 7
+	.  error
+
+
+state 13
+	pair:  KEY '=' '{' pairs '}'.    (5)
+
+	.  reduce 5 (src line 47)
+
+
+9 terminals, 4 nonterminals
+6 grammar rules, 14/2000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+53 working sets used
+memory: parser 5/30000
+0 extra closures
+11 shift entries, 1 exceptions
+5 goto entries
+1 entries saved by goto default
+Optimizer space used: output 14/30000
+14 table entries, 0 zero
+maximum spread: 9, maximum offset: 11
