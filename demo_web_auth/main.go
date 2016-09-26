@@ -12,7 +12,8 @@ import (
 )
 
 var users = map[string]string{"qcg": "qq", "ynn": "nn"}
-var sessions = map[string]bool{}
+var sessions = map[string]time.Time{}
+var EXPIRES = time.Hour * 12
 
 func tryLogin(username, password string) (http.Cookie, error) {
 	// if exists := db.UserExists(username, password); !exists {
@@ -26,15 +27,15 @@ func tryLogin(username, password string) (http.Cookie, error) {
 		return http.Cookie{}, err
 	}
 
-	sessions[sid] = true
+	sessions[sid] = time.Now().Add(EXPIRES) // set session with expires
 
 	loginCookie := http.Cookie{
 		Name:     "id",
 		Value:    sid,
-		MaxAge:   int((time.Hour * 12).Seconds()),
+		MaxAge:   int(EXPIRES.Seconds()),
 		HttpOnly: true,
-		Domain:   "mydomain.com",
-		Path:     "/admin/",
+		Domain:   "localhost",
+		Path:     "/",
 	}
 
 	return loginCookie, nil
@@ -44,7 +45,6 @@ func randString(size int) (string, error) {
 	buf := make([]byte, size)
 
 	if _, err := rand.Read(buf); err != nil {
-		log.Println(err)
 		return "", errors.New("Couldn't generate random string")
 	}
 
@@ -53,14 +53,16 @@ func randString(size int) (string, error) {
 
 func sessionExists(r *http.Request) bool {
 	cookie, err := r.Cookie("id")
-	if err == http.ErrNoCookie {
-		return false
-	} else if err != nil {
+	if err != nil {
 		log.Println(err)
 		return false
 	}
-
-	if _, exists := sessions[cookie.Value]; !exists {
+	expires, exists := sessions[cookie.Value]
+	if !exists {
+		return false
+	}
+	if expires.Before(time.Now()) {
+		delete(sessions, cookie.Value) // delete session when expires
 		return false
 	}
 
@@ -69,28 +71,29 @@ func sessionExists(r *http.Request) bool {
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	if !sessionExists(r) {
-		http.Redirect(w, r, "/login", http.StatusUnauthorized)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
-	fmt.Fprintf(w, "Hello astaxie!")
+	fmt.Fprintf(w, "Authorized!")
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
 	if r.Method == "GET" {
 		if sessionExists(r) {
-			http.Redirect(w, r, "/", http.StatusOK)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		} else {
 			t, _ := template.ParseFiles("login.gtpl")
 			t.Execute(w, nil)
 		}
 	} else {
+		r.ParseForm()
 		cookie, err := tryLogin(r.Form["username"][0], r.Form["password"][0])
 		if err != nil {
-			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			log.Println(err)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		} else {
+			http.SetCookie(w, &cookie)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
-		http.SetCookie(w, &cookie)
-		fmt.Println("username:", r.Form["username"][0])
-		fmt.Println("password:", r.Form["password"][0])
 	}
 }
 
