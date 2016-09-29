@@ -1,4 +1,4 @@
-package trygo
+package main
 
 import (
 	"fmt"
