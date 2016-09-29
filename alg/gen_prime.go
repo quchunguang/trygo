@@ -1,14 +1,9 @@
 // 3.6 Sieve of Eratosthenes
 package main
 
-import (
-	"fmt"
-	"os"
-	"strconv"
-)
+import "fmt"
 
-func GenPrime() {
-	N, _ := strconv.Atoi(os.Args[1])
+func GenPrime(N int) {
 	a := make([]bool, N) // false by default
 	fmt.Println(a[10])
 	for i := 2; i < N; i++ {

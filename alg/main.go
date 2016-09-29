@@ -8,7 +8,7 @@ func main() {
 	SingleLink()
 	DemoMapReduce()
 	DemoPermutation()
-	GenPrime()
+	GenPrime(100)
 	MatchRegexp()
 	SingleRing()
 	Searching()
