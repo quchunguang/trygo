@@ -15,7 +15,7 @@ import (
 
 var (
 	TARGET = "path_file"
-	URL    = "https://api.myjson.com/bins/29tmg"
+	URL    = "https://api.myjson.com/bins/19swk"
 )
 
 func upload(jsonstr []byte, url string) {
