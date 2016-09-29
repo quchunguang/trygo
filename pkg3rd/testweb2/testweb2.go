@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -10,7 +11,7 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.Form)
 	log.Println("path", r.URL.Path)
 	log.Println("scheme", r.URL.Scheme)
-	log.Fprintf(w, "Hello astaxie!") //这个写入到w的是输出到客户端的
+	fmt.Fprintln(w, "Hello astaxie!") //这个写入到w的是输出到客户端的
 }
 
 func main() {

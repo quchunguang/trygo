@@ -18,8 +18,6 @@ func main() {
 	b = bytes.Format(1000 * 1000 * 1000)
 	fmt.Println(b)
 
-	// Binary prefix
-	bytes.BinaryPrefix(true)
 	b = bytes.Format(1323)
 	fmt.Println(b)
 }

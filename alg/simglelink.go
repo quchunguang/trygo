@@ -16,7 +16,7 @@ func NewNode(item interface{}, next *Node) *Node {
 	return n
 }
 
-func main() {
+func SingleLink() {
 	n2 := NewNode(2, nil)
 	n1 := NewNode(1, n2)
 	n0 := NewNode(0, n1)

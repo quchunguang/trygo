@@ -13,22 +13,22 @@ import (
 	"strconv"
 )
 
-type Node struct {
+type RNode struct {
 	item interface{}
-	next *Node
+	next *RNode
 }
 
-func main() {
-	var last, tmp *Node
+func SingleRing() {
+	var last, tmp *RNode
 
 	// first one
-	last = &Node{1, nil}
+	last = &RNode{1, nil}
 	last.next = last
 
 	// build ring
 	N, _ := strconv.Atoi(os.Args[1])
 	for i := 2; i <= N; i++ {
-		tmp = &Node{i, last.next}
+		tmp = &RNode{i, last.next}
 		last.next = tmp
 		last = tmp
 	}
