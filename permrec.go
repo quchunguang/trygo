@@ -82,10 +82,11 @@ func solve(form, numberop []int, index, magic int) {
 func rpnstr(r []int) (ret string) { //将 rpn 转换到固定的标记
 	s := make([]string, 0) //分配内存
 	for k, t := range r {
+		var a,b string
 		switch t {
 		case ADD, SUB, MUL, DIV:
-			a, s := s[len(s)-1], s[:len(s)-1]
-			b, s := s[len(s)-1], s[:len(s)-1]
+			a, s = s[len(s)-1], s[:len(s)-1]
+			b, s = s[len(s)-1], s[:len(s)-1]
 			if k == len(r)-1 {
 				s = append(s, b+mop[t]+a)
 			} else {

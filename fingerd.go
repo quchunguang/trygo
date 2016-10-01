@@ -42,14 +42,14 @@ func handleConnection(conn net.Conn) {
 func getUserInfo(usr string) ([]byte, error) {
 	u, e := user.Lookup(usr)
 	if e != nil {
-		fmt.Println("[ERROR] user %s unknown!")
+		fmt.Printf("[ERROR] user %s unknown!\n", usr)
 		return nil, e
 	}
 	data, err := ioutil.ReadFile(u.HomeDir + "/.plan")
-	fmt.Println("[OK] user %s have a .plan file!")
 	if err != nil {
-		fmt.Println("[OK] user %s does not have a .plan file!")
+		fmt.Printf("[OK] user %s does not have a .plan file!\n", usr)
 		return data, errors.New("User doesn't have a .plan file!\n")
 	}
+	fmt.Printf("[OK] user %s have a .plan file!\n", usr)
 	return data, nil
 }
