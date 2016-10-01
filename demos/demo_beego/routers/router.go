@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"github.com/quchunguang/trygo/standalone/testbeego/controllers"
+	"github.com/quchunguang/trygo/demos/demo_beego/controllers"
 	"github.com/astaxie/beego"
 )
 

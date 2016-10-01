@@ -6,7 +6,7 @@ import (
 	"testing"
 	"runtime"
 	"path/filepath"
-	_ "github.com/quchunguang/trygo/standalone/testbeego/routers"
+	_ "github.com/quchunguang/trygo/demos/demo_beego/routers"
 
 	"github.com/astaxie/beego"
 	. "github.com/smartystreets/goconvey/convey"
@@ -36,4 +36,3 @@ func TestMain(t *testing.T) {
 	        })
 	})
 }
-
