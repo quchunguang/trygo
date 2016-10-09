@@ -6,17 +6,17 @@ import (
 )
 
 func main() {
-	fmt.Println("HIc")
+	fmt.Print("Start...")
 	cc := make(chan bool)
 	go func() {
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 		cc <- true
 	}()
 
 	select {
 	case <-cc:
-		fmt.Println(".")
-	case <-time.After(3 * time.Second):
-		fmt.Println("Done")
+		fmt.Println("Done.")
+	case <-time.After(1 * time.Second):
+		fmt.Println("Time out.")
 	}
 }

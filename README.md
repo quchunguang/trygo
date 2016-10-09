@@ -10,13 +10,13 @@ Description
 
 * testlib.go - Small demos about golang standard packages.
 
-* tools/simtool - Simulate some tools of unix/linux
+* simtool - Simulate some tools of unix/linux
 
-* tools/eventframework - A simple event callback framework by golang.
+* eventframework - A simple event callback framework by golang.
 
-* tools/cat - A demo impletements the unix-like `cat` command.
+* cat - A demo impletements the unix-like `cat` command.
 
-* standalone/... - Standalone demos.
+* demos/.../ - Standalone demos.
 
 Install
 -------
@@ -25,7 +25,7 @@ Install
 sudo apt-get install libgl1-mesa-dev xorg-dev # dependence
 
 go get github.com/quchunguang/trygo
-go get github.com/quchunguang/trygo/standalone/...
+go get github.com/quchunguang/trygo/demos/...
 ```
 
 Usage

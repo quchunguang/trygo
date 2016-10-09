@@ -22,6 +22,7 @@ func (s *calcstack) push(k int) {
 	s.data[s.i] = k
 	s.i++
 }
+
 func (s *calcstack) pop() (ret int) {
 	s.i--
 	if s.i < 0 {
@@ -31,6 +32,7 @@ func (s *calcstack) pop() (ret int) {
 	ret = s.data[s.i]
 	return
 }
+
 func DemoCalc() {
 	for {
 		s, err := reader.ReadString('\n')
