@@ -4,13 +4,11 @@ import (
 	"fmt"
 )
 
-const N int = 10
-
-func FastSearch() {
-	var a [N]int
+func FastSearch(n int) {
+	var a []int
 	var p, q int
 
-	for i := 0; i < N; i++ {
+	for i := 0; i < n; i++ {
 		a[i] = i
 	}
 
@@ -24,7 +22,7 @@ func FastSearch() {
 		if t == a[q] {
 			continue
 		}
-		for i := 0; i < N; i++ {
+		for i := 0; i < n; i++ {
 			if a[i] == t {
 				a[i] = a[q]
 			}
@@ -34,12 +32,12 @@ func FastSearch() {
 
 }
 
-func FastMerge() {
-	var a [N]int
+func FastMerge(n int) {
+	var a []int
 	var p, q int
 
-	for i := 0; i < N; i++ {
-		a[i] = -1 // Not connect to anyone
+	for i := 0; i < n; i++ {
+		a[i] = -1 // Not connect to any one
 	}
 
 	for {

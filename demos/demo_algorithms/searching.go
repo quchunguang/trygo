@@ -6,8 +6,6 @@ import (
 	"fmt"
 )
 
-var a = []int{0, 1, 2, 3, 4, 7, 9}
-
 func Search(a []int, v, l, r int) int {
 	for i := l; i < r; i++ {
 		if a[i] == v {
@@ -33,6 +31,7 @@ func Search2(a []int, v, l, r int) int {
 }
 
 func Searching() {
-	i := Search2(a, 7, 0, N)
+	var a = []int{0, 1, 2, 3, 4, 7, 9}
+	i := Search2(a, 7, 0, 6)
 	fmt.Println(i)
 }

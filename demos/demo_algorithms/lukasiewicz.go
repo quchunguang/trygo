@@ -48,3 +48,29 @@ func Infix2Postfix(s string) (ret string) {
 	fmt.Println(ret)
 	return
 }
+
+// 5.4 Prefix Notation
+func PrefixCalc(s string) {
+	i := 0
+	var eval func() int
+	eval = func() int {
+		x := 0
+		for s[i] == ' ' {
+			i++
+		}
+		if s[i] == '+' {
+			i++
+			return eval() + eval()
+		}
+		if s[i] == '*' {
+			i++
+			return eval() * eval()
+		}
+		for s[i] >= '0' && s[i] <= '9' {
+			x = 10*x + (int(s[i]) - '0')
+			i++
+		}
+		return x
+	}
+	fmt.Println(eval())
+}
