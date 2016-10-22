@@ -1,5 +1,8 @@
 trygo
 =====
+[![Build Status](https://travis-ci.org/quchunguang/trygo.svg?branch=master)](https://travis-ci.org/quchunguang/trygo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/quchunguang/trygo)](https://goreportcard.com/report/github.com/quchunguang/trygo)
+[![GoDoc](https://godoc.org/github.com/quchunguang/trygo?status.svg)](https://godoc.org/github.com/quchunguang/trygo)
 
 Simple samples of golang witch goals to covers full feature of golang.
 
