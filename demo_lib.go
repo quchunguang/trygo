@@ -35,22 +35,27 @@ import (
 	"time"
 )
 
+// Hello struct
 type Hello struct{}
 
 func (h Hello) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello!")
 }
-func DemoHttpServ() {
+
+// DemoHTTPServ func
+func DemoHTTPServ() {
 	var h Hello
 	http.ListenAndServe("localhost:4000", h)
 }
 
+// DemoImage func
 func DemoImage() {
 	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
 	fmt.Println(img.Bounds())
 	fmt.Println(img.At(0, 0).RGBA())
 }
 
+// DemoImage2 func
 func DemoImage2() {
 	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
 	for x := 20; x < 80; x++ {
@@ -62,7 +67,7 @@ func DemoImage2() {
 	png.Encode(w, img)
 }
 
-// Show image using command `display` of ImageMagick
+// ShowImage using command `display` of ImageMagick
 func ShowImage(filename string) {
 	cmd := exec.Command("display", filename)
 	err := cmd.Start()
@@ -77,10 +82,11 @@ func ShowImage(filename string) {
 func abs(x int) int {
 	if x < 0 {
 		return -x
-	} else {
-		return x
 	}
+	return x
 }
+
+// DrawLine func
 func DrawLine(img *image.RGBA, x1, y1, x2, y2 int, color color.Color) {
 	if abs(x2-x1) >= abs(y2-y1) {
 		if x1 > x2 {
@@ -102,6 +108,8 @@ func DrawLine(img *image.RGBA, x1, y1, x2, y2 int, color color.Color) {
 		}
 	}
 }
+
+// DemoImage3 func
 func DemoImage3() {
 	filename := "data/testimage3.jpg"
 	img := image.NewRGBA(image.Rect(0, 0, 640, 480))
@@ -117,9 +125,11 @@ func DemoImage3() {
 		log.Fatal(err)
 	}
 	defer file.Close()
-	jpeg.Encode(file, img, &jpeg.Options{Quality:80})
+	jpeg.Encode(file, img, &jpeg.Options{Quality: 80})
 	ShowImage(filename)
 }
+
+// DemoImage4 func
 func DemoImage4() {
 	cmd := exec.Command("date")
 	buf, err := cmd.Output()
@@ -128,6 +138,8 @@ func DemoImage4() {
 	}
 	fmt.Println(string(buf))
 }
+
+// DemoRedis func
 func DemoRedis() {
 	spec := redis.DefaultSpec().Db(0).Password("")
 	client, err := redis.NewSynchClientWithSpec(spec)
@@ -152,6 +164,7 @@ func DemoRedis() {
 	}
 }
 
+// DemoFile func
 func DemoFile() error {
 	name := "test2.go"
 	f, err := os.Open(name)
@@ -198,6 +211,8 @@ func (s simplestack) String() (ret string) {
 	ret += "]"
 	return
 }
+
+// DemoStack func
 func DemoStack() {
 	var s simplestack
 	fmt.Println(s)
@@ -216,6 +231,7 @@ func DemoStack() {
 	fmt.Println(s)
 }
 
+// DemoPackage func
 func DemoPackage() {
 	// 包名是小写的一个单词;不应当有下划线或混合大小写
 	// import bar "bytes"
@@ -227,13 +243,17 @@ func DemoPackage() {
 	fmt.Print(Even(2), Even(3))
 }
 
+// Sorter interface
 type Sorter interface {
 	Len() int
 	Less(i, j int) bool
 	Swap(i, j int)
 }
 
+// Xi for sort
 type Xi []int
+
+// Xs for sort
 type Xs []string
 
 func (p Xi) Len() int               { return len(p) }
@@ -244,6 +264,7 @@ func (p Xs) Len() int               { return len(p) }
 func (p Xs) Less(i int, j int) bool { return p[j] < p[i] }
 func (p Xs) Swap(i int, j int)      { p[i], p[j] = p[j], p[i] }
 
+// Sort sorter
 func Sort(x Sorter) {
 	for i := 0; i < x.Len()-1; i++ {
 		for j := i + 1; j < x.Len(); j++ {
@@ -253,6 +274,8 @@ func Sort(x Sorter) {
 		}
 	}
 }
+
+// DemoSort func
 func DemoSort() {
 	ints := Xi{44, 67, 3, 17, 89, 10, 73, 9, 14, 8}
 	strings := Xs{"nut", "ape", "elephant", "zoo", "go"}
@@ -262,6 +285,7 @@ func DemoSort() {
 	fmt.Printf("%v\n", strings)
 }
 
+// DemoIo func
 func DemoIo() {
 	buf := make([]byte, 1024)
 	f, _ := os.Open("/etc/passwd")
@@ -274,6 +298,8 @@ func DemoIo() {
 		os.Stdout.Write(buf[:n])
 	}
 }
+
+// DemoIo2 func
 func DemoIo2() {
 	buf := make([]byte, 1024)
 	f, _ := os.Open("/etc/passwd")
@@ -290,6 +316,8 @@ func DemoIo2() {
 		w.Write(buf[0:n])
 	}
 }
+
+// DemoIo3 func
 func DemoIo3() {
 	f, _ := os.Open("/etc/passwd")
 	defer f.Close()
@@ -300,6 +328,7 @@ func DemoIo3() {
 	}
 }
 
+// DemoIo4 func
 func DemoIo4() {
 	r, _ := os.Open("/etc/passwd")
 	w, _ := os.Create("/tmp/passwd")
@@ -312,6 +341,8 @@ func DemoIo4() {
 	}
 	fmt.Println(num)
 }
+
+// DemoExec func
 func DemoExec() {
 	cmd := exec.Command("/bin/ls", "-l")
 	// err := cmd.Run()
@@ -321,6 +352,8 @@ func DemoExec() {
 	}
 	fmt.Print(string(buf))
 }
+
+// DemoExec2 func
 func DemoExec2() {
 	var output bytes.Buffer
 	cmd := exec.Command("cat")
@@ -332,6 +365,8 @@ func DemoExec2() {
 	cmd.Wait()
 	fmt.Printf("The output is: %s\n", output.Bytes())
 }
+
+// DemoExec3 func
 func DemoExec3() {
 	cmd := exec.Command("ls", "-ll")
 	stdout, _ := cmd.StdoutPipe()
@@ -340,12 +375,16 @@ func DemoExec3() {
 	cmd.Wait()
 	fmt.Println(string(d))
 }
+
+// DemoNet func
 func DemoNet() {
 	// conn, e := Dial("tcp", "192.0.32.10:80")
 	// conn, e := Dial("udp", "192.0.32.10:80")
 	// conn, e := Dial("tcp", "[2620:0:2d0:200::10]:80")
 }
-func DemoHttp() {
+
+// DemoHTTP func
+func DemoHTTP() {
 	r, err := http.Get("http://www.baidu.com")
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())
@@ -358,12 +397,14 @@ func DemoHttp() {
 	}
 }
 
-////////
+// Payload struct
 type Payload struct {
 	Blog Blogs
 }
+
+// Blogs struct
 type Blogs struct {
-	Id          int
+	ID          int
 	User        Users
 	Title       string
 	Description string
@@ -371,8 +412,10 @@ type Blogs struct {
 	Published   bool
 	Taglist     []string
 }
+
+// Users struct
 type Users struct {
-	Id       int
+	ID       int
 	Name     string
 	Username string
 }
@@ -387,7 +430,9 @@ func getjson() ([]byte, error) {
 	p := Payload{b}
 	return json.MarshalIndent(p, "", "    ")
 }
-func DemoJson() {
+
+// DemoJSON func
+func DemoJSON() {
 	res, _ := getjson()
 	fmt.Print(string(res))
 
@@ -428,12 +473,15 @@ func httpd() {
 	http.HandleFunc("/", serveRest)
 	http.ListenAndServe("localhost:1337", nil)
 }
-func DemoHttpJson() {
+
+// DemoHTTPJson func
+func DemoHTTPJson() {
 	go httpd()
 	go httpc()
 	time.Sleep(2e9)
 }
 
+// DemoSync func
 func DemoSync() {
 	done := make(chan bool)
 	go func() {
@@ -457,6 +505,8 @@ func initConifg(once *sync.Once, handler func()) {
 	handler()
 
 }
+
+// DemoSync2 func
 func DemoSync2() {
 	var once sync.Once
 	completeChan := []chan bool{make(chan bool, 1), make(chan bool, 1)}
@@ -481,6 +531,8 @@ func payload() {
 	runtime.Gosched()
 	fmt.Println("in payload()")
 }
+
+// DemoSync3 func
 func DemoSync3() {
 	runtime.GOMAXPROCS(4) // MUST only go version <= 1.4
 	waitchan := make(chan int)
@@ -496,7 +548,7 @@ func DemoSync3() {
 	}
 }
 
-// from: github.com/deckarep/golang-set
+// DemoSet from: github.com/deckarep/golang-set
 func DemoSet() {
 	rc := mapset.NewSet()
 	rc.Add("Cooking")
@@ -527,12 +579,13 @@ func DemoSet() {
 		[]interface{}{"Welding", "Automotive", "English"})))
 }
 
-//////
+// Item struct
 type Item struct {
 	Key   string
 	Value string
 }
 
+// DemoQueue func
 func DemoQueue() {
 	var v = Item{Key: "a", Value: "A"}
 	queue := NewQueue()
@@ -553,9 +606,8 @@ func DemoQueue() {
 	fmt.Println(queue.Query(func(val interface{}) bool {
 		if val.(Item).Key == "a" {
 			return true
-		} else {
-			return false
 		}
+		return false
 	}).Value)
 	fmt.Println(queue.Contain(v))
 	fmt.Println(queue.Dequeue().Value)
@@ -575,12 +627,13 @@ func (s intArray) Len() int           { return len(s) }
 func (s intArray) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s intArray) Less(i, j int) bool { return s[i] < s[j] }
 
+// DemoSortAny func
 func DemoSortAny() {
 	a := []int{1, 5, 10, 4}
 	sort.Sort(intArray(a))
 }
 
-//////
+// DemoSocket func
 func DemoSocket() {
 	var buf = make([]byte, 50)
 	var n int
@@ -595,6 +648,8 @@ func DemoSocket() {
 		fmt.Print(string(buf[:n]))
 	}
 }
+
+// DemoArgs func
 func DemoArgs() {
 	var li1 = []interface{}{"aa", 3}
 	fmt.Println(li1...)
@@ -605,6 +660,8 @@ func DemoArgs() {
 		fmt.Printf("i=%d len=%d cap=%d\n", i, len(li2), cap(li2))
 	}
 }
+
+// DemoBufio func
 func DemoBufio() {
 	stdin := bufio.NewReader(os.Stdin)
 	for {
@@ -616,9 +673,11 @@ func DemoBufio() {
 	}
 	os.Exit(2)
 }
+
+// DemoRegexp func
 func DemoRegexp() {
 	var (
-		before string = "Test loop1 in loop1"
+		before = "Test loop1 in loop1"
 		after  string
 	)
 	if re, err := regexp.Compile("loop1"); err == nil {
@@ -629,11 +688,14 @@ func DemoRegexp() {
 	}
 }
 
+// DemoGetenv func
 func DemoGetenv() {
 	if val, found := syscall.Getenv("GOPATH"); found { // (1)
 		fmt.Println(val)
 	}
 }
+
+// DemoDeleteItem func
 func DemoDeleteItem() {
 	var li = []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	for i := len(li) - 1; i >= 0; i-- {
@@ -644,20 +706,24 @@ func DemoDeleteItem() {
 	fmt.Println(li[len(li):])
 }
 
+// MyStruct struct
 type MyStruct struct {
 	name string
 }
 
+// GetName func
 func (s MyStruct) GetName() string {
 	return s.name
 }
+
+// DemoReflect func
 func DemoReflect() {
 	s := "this is string"
 	fmt.Println(reflect.TypeOf(s))
 	fmt.Println("-------------------")
 
 	fmt.Println(reflect.ValueOf(s))
-	var x float64 = 3.4
+	var x = 3.4
 	fmt.Println(reflect.ValueOf(x))
 	fmt.Println("-------------------")
 
@@ -672,6 +738,7 @@ func DemoReflect() {
 	fmt.Println(b[0])
 }
 
+// FakeTime func
 func FakeTime() {
 	stop := time.After(5 * time.Second)
 	tick := time.NewTicker(1 * time.Second)
@@ -686,6 +753,7 @@ func FakeTime() {
 	}
 }
 
+// DemoSignal func
 func DemoSignal() {
 	f, err := ioutil.TempFile("", "test")
 	if err != nil {
@@ -699,6 +767,7 @@ func DemoSignal() {
 	fmt.Println("After ctrl+c")
 }
 
+// DemoSync4 func
 func DemoSync4() {
 	var counter = struct {
 		sync.RWMutex
@@ -716,6 +785,7 @@ func DemoSync4() {
 	fmt.Println("some_key:", n)
 }
 
+// DemoReflection func
 func DemoReflection() {
 	var r io.Reader
 	tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
@@ -728,7 +798,7 @@ func DemoReflection() {
 	w = r.(io.Writer)
 	fmt.Println(w)
 
-	var x float64 = 3.4
+	var x = 3.4
 	fmt.Println("type:", reflect.TypeOf(x))
 	v := reflect.ValueOf(x)
 	fmt.Println("type:", v.Type())
@@ -754,8 +824,9 @@ func DemoReflection() {
 	fmt.Printf("value is %d\n", vvv.Interface())
 }
 
+// DemoReflection2 func
 func DemoReflection2() {
-	var x float64 = 3.4
+	var x = 3.4
 	p := reflect.ValueOf(&x) // Note: take the address of x.
 	fmt.Println("type of p:", p.Type())
 	fmt.Println("settability of p:", p.CanSet())
@@ -766,6 +837,7 @@ func DemoReflection2() {
 	fmt.Println(x)
 }
 
+// DemoReflection3 func
 func DemoReflection3() {
 	type T struct {
 		A int
@@ -784,7 +856,8 @@ func DemoReflection3() {
 	fmt.Println("t is now", t)
 }
 
-func DemoJson2() {
+// DemoJSON2 func
+func DemoJSON2() {
 	type Message struct {
 		Name string
 		Body string
@@ -809,7 +882,9 @@ func DemoJson2() {
 	}
 	fmt.Println(mmm)
 }
-func DemoJson3() {
+
+// DemoJSON3 func
+func DemoJSON3() {
 	b := []byte(`{"Name":"Wednesday","Age":6,"Parents":["Gomez","Morticia"]}`)
 	var f interface{}
 	err := json.Unmarshal(b, &f)
@@ -834,7 +909,8 @@ func DemoJson3() {
 	}
 }
 
-func DemoJson4() {
+// DemoJSON4 func
+func DemoJSON4() {
 	dec := json.NewDecoder(os.Stdin)
 	enc := json.NewEncoder(os.Stdout)
 	for {
@@ -853,12 +929,16 @@ func DemoJson4() {
 		}
 	}
 }
+
+// DemoBase64 func
 func DemoBase64() {
 	// A Buffer can turn a string or a []byte into an io.Reader.
 	buf := bytes.NewBufferString("R29waGVycyBydWxlIQ==")
 	dec := base64.NewDecoder(base64.StdEncoding, buf)
 	io.Copy(os.Stdout, dec)
 }
+
+// DemoBig func
 func DemoBig() {
 	i := new(big.Int)
 	i.SetString("12345678901234567890", 10)
@@ -868,9 +948,13 @@ func DemoBig() {
 	r.SetString("355/113")
 	fmt.Println(r.FloatString(7))
 }
-func DemoHtml() {
+
+// DemoHTTP2 func
+func DemoHTTP2() {
 	fmt.Println(html.EscapeString("<html>"))
 }
+
+// DemoSplit func
 func DemoSplit() {
 	var a []byte
 	a = strconv.AppendQuote(a, "abc")
@@ -878,17 +962,21 @@ func DemoSplit() {
 
 	s := "a ,b   b, ccc"
 	sa := strings.Split(s, ",")
-	for i, _ := range sa {
+	for i := range sa {
 		sa[i] = strings.TrimSpace(sa[i])
 	}
 	fmt.Println(sa)
 }
+
+// DemoTime func
 func DemoTime() {
 	c := time.Tick(1 * time.Second)
 	for now := range c {
 		fmt.Printf("%v\n", now)
 	}
 }
+
+// DemoTabwriter func
 func DemoTabwriter() {
 	w := new(tabwriter.Writer)
 
@@ -927,6 +1015,7 @@ func (a ByAge) Len() int           { return len(a) }
 func (a ByAge) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByAge) Less(i, j int) bool { return a[i].Age < a[j].Age }
 
+// DemoSort2 func
 func DemoSort2() {
 	people := []person{
 		{"Bob", 31},
@@ -938,10 +1027,14 @@ func DemoSort2() {
 	sort.Sort(ByAge(people))
 	fmt.Println(people)
 }
+
+// DemoMime func
 func DemoMime() {
 	s := mime.TypeByExtension(".c")
 	fmt.Println(s)
 }
+
+// DemoRegexp2 func
 func DemoRegexp2() {
 	fmt.Println(regexp.Match("H.* ", []byte("Hello World!")))
 

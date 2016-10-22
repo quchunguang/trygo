@@ -26,6 +26,8 @@ func cat(r *bufio.Reader) {
 	}
 	return
 }
+
+// Cat func
 func Cat() {
 	flag.Parse()
 	if flag.NArg() == 0 {

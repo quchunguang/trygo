@@ -1,6 +1,4 @@
-/*
-   The trygo package implements a simple library demos the package useage..
-*/
+// Package trygo implements a simple library demos the package useage..
 package trygo
 
 // Even tests if gaven i is even. Return true for even.

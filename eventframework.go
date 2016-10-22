@@ -24,10 +24,10 @@ import (
 ///////////////////////////////////////////////////////////////////////////////
 // User side code
 
-// user programming entry OnloadApplication()
+// OnloadApplication user programming entry OnloadApplication()
 func OnloadApplication(c Control) {
 	// using app access functions privid by framework
-	var app Application = c.(Application)
+	var app = c.(Application)
 	var obj Control
 
 	// create object
@@ -47,10 +47,10 @@ func OnloadApplication(c Control) {
 	app.Add("ckbUpcase", obj)
 }
 
-// user customized event callback functions
+// OnclickButton1 user customized event callback functions
 func OnclickButton1(c Control) {
 	// upcast Control to concrete type
-	var btn Button = c.(Button)
+	var btn = c.(Button)
 
 	fmt.Println("--> OnclickButton1(): Button1 was clicked.")
 	// call method implemented the interface Control
@@ -61,18 +61,21 @@ func OnclickButton1(c Control) {
 	os.Exit(0)
 }
 
+// OnoverButton1 func
 func OnoverButton1(c Control) {
 	fmt.Println("--> OnclickButton1(): Button1 was overed.")
 }
 
+// OnloadForm1 func
 func OnloadForm1(c Control) {
-	var frm Form = c.(Form)
+	var frm = c.(Form)
 	fmt.Println("--> OnloadForm1(): Form1 was loaded.")
 	fmt.Printf("    form1 width=%d, height=%d Title=%s\n", frm.Width, frm.Height, frm.Text)
 }
 
+// OnoverCheckbox1 func
 func OnoverCheckbox1(c Control) {
-	var ckb Checkbox = c.(Checkbox)
+	var ckb = c.(Checkbox)
 
 	fmt.Println("--> OnoverCheckbox1(): Checkbox1 was overed.")
 	fmt.Printf("    Interface function Tostring()=%s\n", ckb.Tostring())
@@ -87,35 +90,38 @@ type Control interface {
 	Tostring() string
 }
 
-// control Form
+// Form control
 type Form struct {
 	Width  int
 	Height int
 	Text   string
 }
 
+// Tostring func
 func (f Form) Tostring() string {
 	return "Form"
 }
 
-// control Button
+// Button struct
 type Button struct {
 	X    int
 	Y    int
 	Text string
 }
 
+// Tostring func
 func (b Button) Tostring() string {
 	return "Button"
 }
 
-// control Checkbox
+// Checkbox struct
 type Checkbox struct {
 	X       int
 	Y       int
 	Checked bool
 }
 
+// Tostring func
 func (c Checkbox) Tostring() string {
 	return "Checkbox"
 }
@@ -133,17 +139,20 @@ type eventkey struct {
 	objid   string
 	eventid int
 }
+
+// Application struct
 type Application struct {
 	Text     string
 	Objects  map[string]Control
 	Bindings map[eventkey]func(Control)
 }
 
+// Tostring func
 func (a Application) Tostring() string {
 	return "Application"
 }
 
-// add target control to application, LOAD event generated either
+// Add target control to application, LOAD event generated either
 func (a Application) Add(objid string, c Control) {
 	a.Objects[objid] = c
 
@@ -161,13 +170,13 @@ func (a Application) Add(objid string, c Control) {
 	a.Event(objid, LOAD)
 }
 
-// binding (object, event) with process function
+// Binding (object, event) with process function
 func (a Application) Binding(objid string, eventid int, op func(Control)) {
 	key := eventkey{objid, eventid}
 	a.Bindings[key] = op
 }
 
-// process event will cause callback function executed
+// Event process event will cause callback function executed
 func (a Application) Event(objid string, eventid int) {
 	key := eventkey{objid, eventid}
 	// do nothing if no function binding on this (object, event)
@@ -185,7 +194,7 @@ type event struct {
 var events = make(chan event)
 
 // emulate event generator will raise one event per-second
-func generate_events() {
+func generateEvents() {
 
 	time.Sleep(1000000000) // 1 second
 	events <- event{"ckbUpcase", OVER}
@@ -197,7 +206,7 @@ func generate_events() {
 	events <- event{"btnOK", CLICK}
 }
 
-// framework's main event loop
+// EventLoop framework's main event loop
 func EventLoop() {
 	// create application and add to dictionary
 	// this will cause binding LOAD event raised
@@ -206,7 +215,7 @@ func EventLoop() {
 	app.Add("Application", app)
 
 	// generate events from go routine
-	go generate_events()
+	go generateEvents()
 
 	// event process loop, receive events from goroutine
 	var e event

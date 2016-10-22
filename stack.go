@@ -2,6 +2,7 @@ package trygo
 
 import "container/list"
 
+// Stack struct
 type Stack struct {
 	list *list.List
 }

@@ -15,6 +15,7 @@ import (
 	"os/user"
 )
 
+// Fingerd func
 func Fingerd() {
 	flag.Parse()
 	ln, err := net.Listen("tcp", ":79")

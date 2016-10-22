@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var reader *bufio.Reader = bufio.NewReader(os.Stdin)
+var reader = bufio.NewReader(os.Stdin)
 var st = new(calcstack)
 
 type calcstack struct {
@@ -33,6 +33,7 @@ func (s *calcstack) pop() (ret int) {
 	return
 }
 
+// DemoCalc func
 func DemoCalc() {
 	for {
 		s, err := reader.ReadString('\n')

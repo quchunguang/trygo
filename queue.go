@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// Queue struct
 type Queue struct {
 	sem  chan int
 	list *list.List
@@ -12,14 +13,14 @@ type Queue struct {
 
 var tFunc func(val interface{}) bool
 
-// Create a new Queue and return.
+// NewQueue create a new Queue and return.
 func NewQueue() *Queue {
 	sem := make(chan int, 1)
 	list := list.New()
 	return &Queue{sem, list}
 }
 
-// Get size of the queue
+// Size get size of the queue
 func (q *Queue) Size() int {
 	return q.list.Len()
 }
@@ -41,7 +42,7 @@ func (q *Queue) Dequeue() *list.Element {
 	return e
 }
 
-// Queue returns the element in the queue only if func queueFunc(element) returns true..
+// Query returns the element in the queue only if func queueFunc(element) returns true..
 func (q *Queue) Query(queryFunc interface{}) *list.Element {
 	q.sem <- 1
 	e := q.list.Front()
@@ -69,9 +70,8 @@ func (q *Queue) Contain(val interface{}) bool {
 		if e.Value == val {
 			<-q.sem
 			return true
-		} else {
-			e = e.Next()
 		}
+		e = e.Next()
 	}
 	<-q.sem
 	return false

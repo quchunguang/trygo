@@ -12,7 +12,8 @@ import (
 	"strings"
 )
 
-func DnsLookup() {
+// DNSLookup func
+func DNSLookup() {
 	dnssec := flag.Bool("dnssec", false, "Request DNSSEC records")
 	port := flag.String("port", "53", "Set the query port")
 	flag.Usage = func() {
@@ -26,6 +27,8 @@ func DnsLookup() {
 
 	}
 }
+
+// Psgrp func
 func Psgrp() {
 	ps := exec.Command("ps", "-e", "-opid,ppid,comm")
 	output, _ := ps.Output()
@@ -41,7 +44,7 @@ func Psgrp() {
 	}
 	schild := make([]int, len(child))
 	i := 0
-	for k, _ := range child {
+	for k := range child {
 		schild[i] = k
 		i++
 	}
@@ -56,6 +59,7 @@ func Psgrp() {
 	}
 }
 
+// Wc func
 func Wc() {
 	var chars, words, lines int
 	r := bufio.NewReader(os.Stdin)
@@ -71,6 +75,8 @@ func Wc() {
 		}
 	}
 }
+
+// Uniq func
 func Uniq() {
 	list := []string{"a", "b", "a", "a", "c", "d", "e", "f"}
 	first := list[0]
@@ -83,6 +89,7 @@ func Uniq() {
 	}
 }
 
+// EchoServer func
 // Usage
 //     $ ./test		    # server side
 //     $ nc 127.0.0.1 8053  # client side
@@ -101,6 +108,8 @@ func EchoServer() {
 		}
 	}
 }
+
+// Echo func
 func Echo(c net.Conn) {
 	defer c.Close()
 	line, err := bufio.NewReader(c).ReadString('\n')
@@ -114,4 +123,3 @@ func Echo(c net.Conn) {
 		return
 	}
 }
-

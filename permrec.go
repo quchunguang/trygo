@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// Some operator
 const (
 	_ = 1000 * iota
 	ADD
@@ -36,6 +37,7 @@ func (s *permrecstack) Pop() int   { s.i--; return s.data[s.i] }
 var found int
 var stack = new(permrecstack)
 
+// Permrec func
 func Permrec() {
 	flag.Parse()
 	list := []int{1, 6, 7, 8, 8, 75, ADD, SUB, MUL, DIV}
@@ -82,7 +84,7 @@ func solve(form, numberop []int, index, magic int) {
 func rpnstr(r []int) (ret string) { //将 rpn 转换到固定的标记
 	s := make([]string, 0) //分配内存
 	for k, t := range r {
-		var a,b string
+		var a, b string
 		switch t {
 		case ADD, SUB, MUL, DIV:
 			a, s = s[len(s)-1], s[:len(s)-1]

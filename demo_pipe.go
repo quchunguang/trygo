@@ -74,6 +74,7 @@ func genpipe2(nums ...int) <-chan int {
 	return out
 }
 
+// DemoPipe func
 func DemoPipe() {
 	pfrom := genpipe2(3, 4, 5, 6)
 

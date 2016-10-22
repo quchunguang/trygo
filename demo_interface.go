@@ -4,11 +4,12 @@ import (
 	"fmt"
 )
 
-// 自定义类型
+// UserDef 自定义类型
 type UserDef struct {
 	What interface{}
 }
 
+// DemoInterface3 func
 func DemoInterface3() {
 	// 接口类型
 	var Interface interface{}

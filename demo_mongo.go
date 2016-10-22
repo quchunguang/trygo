@@ -7,11 +7,13 @@ import (
 	"log"
 )
 
+// AddressBook struct
 type AddressBook struct {
 	Name  string
 	Phone string
 }
 
+// DemoMongo func
 func DemoMongo() {
 	session, err := mgo.Dial("localhost")
 	if err != nil {

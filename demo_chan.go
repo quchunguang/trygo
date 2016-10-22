@@ -29,6 +29,7 @@ func fib() chan int {
 	return out
 }
 
+// DemoChan func
 func DemoChan() {
 	x := fib()
 	for i := 0; i < 10; i++ {

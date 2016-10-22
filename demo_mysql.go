@@ -3,14 +3,15 @@ package trygo
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql" // mysql driver
 )
 
+// TestMysql struct
 type TestMysql struct {
 	db *sql.DB
 }
 
-/* 初始化数据库引擎 */
+// Init 初始化数据库引擎
 func Init() (*TestMysql, error) {
 	test := new(TestMysql)
 	db, err := sql.Open("mysql", "test:test@tcp(127.0.0.1:3306)/abwork?charset=utf8")
@@ -25,7 +26,7 @@ func Init() (*TestMysql, error) {
 	return test, nil
 }
 
-/* 测试数据库数据添加 */
+// Create 测试数据库数据添加
 func (test *TestMysql) Create() {
 	if test.db == nil {
 		return
@@ -53,7 +54,7 @@ func (test *TestMysql) Create() {
 	}
 }
 
-/* 测试数据库数据更新 */
+// Update 测试数据库数据更新
 func (test *TestMysql) Update() {
 	if test.db == nil {
 		return
@@ -104,7 +105,7 @@ func (test *TestMysql) Read() {
 	}
 }
 
-/* 测试数据库删除 */
+// Delete 测试数据库删除
 func (test *TestMysql) Delete() {
 	if test.db == nil {
 		return
@@ -122,12 +123,14 @@ func (test *TestMysql) Delete() {
 	}
 }
 
+// Close func
 func (test *TestMysql) Close() {
 	if test.db != nil {
 		test.db.Close()
 	}
 }
 
+// DemoMysql func
 func DemoMysql() {
 	if test, err := Init(); err == nil {
 		test.Create()

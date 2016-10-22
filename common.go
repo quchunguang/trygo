@@ -1,5 +1,6 @@
 package trygo
 
+// Append func
 func Append(slice []int, element int) []int {
 	n := len(slice)
 	if cap(slice) == n {
@@ -9,6 +10,8 @@ func Append(slice []int, element int) []int {
 	slice[n] = element
 	return slice
 }
+
+// DoubleExtend func
 func DoubleExtend(slice []int) []int {
 	var newcap int
 	if cap(slice) == 0 {
