@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/alphazero/Go-Redis"
 	"github.com/deckarep/golang-set"
 	"html"
 	"image"
@@ -137,31 +136,6 @@ func DemoImage4() {
 		log.Fatal(err)
 	}
 	fmt.Println(string(buf))
-}
-
-// DemoRedis func
-func DemoRedis() {
-	spec := redis.DefaultSpec().Db(0).Password("")
-	client, err := redis.NewSynchClientWithSpec(spec)
-	if err != nil {
-		fmt.Println("connect error", err)
-		return
-	}
-
-	dbkey := "info"
-	value, err := client.Get(dbkey)
-	if err != nil {
-		fmt.Println("Get error", err)
-		return
-	}
-	var v []byte
-	if value == nil {
-		v = []byte("Hello world!")
-		client.Set(dbkey, v)
-		fmt.Printf("Input>%s \n", v)
-	} else {
-		fmt.Printf("Receive>%s \n", v)
-	}
 }
 
 // DemoFile func

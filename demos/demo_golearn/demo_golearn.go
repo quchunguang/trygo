@@ -28,7 +28,7 @@ func main() {
 	cls.Fit(trainData)
 
 	//Calculates the Euclidean distance and returns the most popular label
-	predictions := cls.Predict(testData)
+	predictions, _ := cls.Predict(testData)
 	fmt.Println(predictions)
 
 	// Prints precision/recall metrics
