@@ -16,7 +16,7 @@ func main() {
 	select {
 	case <-cc:
 		fmt.Println("Done.")
-	case <-time.After(1 * time.Second):
+	case <-time.After(3 * time.Second):
 		fmt.Println("Time out.")
 	}
 }
