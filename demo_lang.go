@@ -1482,3 +1482,20 @@ func DemoConst() {
 	fmt.Println(fff)
 
 }
+
+type block []byte
+
+func (b block) GetA() int64 { return int64(b[0])<<8 | int64(b[1]) }
+func (b block) GetB() int64 { return int64(b[2]) }
+func (b block) GetC() int64 { return int64(b[3]) }
+
+func DemoBinary() {
+	b := make(block, 4, 4)
+
+	f, _ := os.Open("data")
+	defer f.Close()
+	io.ReadFull(f, b)
+	fmt.Printf("%x\n", b.GetA())
+	fmt.Printf("%x\n", b.GetB())
+	fmt.Printf("%x\n", b.GetC())
+}
