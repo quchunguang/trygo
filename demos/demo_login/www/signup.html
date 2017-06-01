@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="jumbotron.css?v=3" rel="stylesheet">
+</head>
+<body>
+
+<div id="alertError" class="alert alert-danger" role="alert">错误</div>
+<div id="alertSuccess" class="alert alert-success" role="alert">成功</div>
+
+<div class="container">
+
+<div class="title">
+<h1 class="display-4">注册</h1>
+</div>
+
+<form id="signup_form" method="POST">
+
+  <div class="form-group row">
+    <label for="form_username" class="col-2">用户名</label>
+    <div class="col-2">
+    <input type="text" class="form-control" id="form_username" name="username" placeholder="用户名">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="form_password" class="col-2">密码</label>
+    <div class="col-2">
+    <input type="password" class="form-control" id="form_password" name="password" placeholder="密码">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="form_password2" class="col-2">再次输入密码</label>
+    <div class="col-2">
+    <input type="password" class="form-control" id="form_password2" name="password2" placeholder="再次输入密码">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="form_username" class="col-2">显示名</label>
+    <div class="col-2">
+    <input type="text" class="form-control" id="form_nickname" name="nickname" placeholder="显示名">
+    </div>
+  </div>
+
+  <div class="form-group row">
+      <div class="offset-2 col-10">
+      <button type="button" id="btn" class="btn btn-primary">提交</button>
+      </div>
+  </div>
+
+  <input type="button" name="reset" style="display: none;" /> <!-- type must be button !!! -->
+</form>
+
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery.serializeJSON/2.8.1/jquery.serializejson.min.js"></script>
+<script src="https://cdn.bootcss.com/tether/1.4.0/js/tether.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+    $("#btn").click(function(event) {
+        $("#alertError").hide();
+        $("#alertSuccess").hide();
+
+        var data = $('#signup_form').serializeJSON();
+        $.ajax({
+            type: 'POST',
+            url: 'signup',
+            dataType: 'json',
+            contentType : 'application/json',
+            data: JSON.stringify(data),
+            // data: $("#form_signup").serialize(),
+            success: function(data) {
+                if(data.code === 0){
+                    showSuccess(data.message);
+                } else{
+                    showError(data.message);
+                }
+            }
+        });
+    });
+});
+
+function showSuccess(message) {
+    $("#alertSuccess").text(message).show(); //or fadeIn
+    setTimeout(function() {
+        $("#alertSuccess").hide(); //or fadeOut
+    }, 3000);
+}
+
+function showError(message) {
+    $("#alertError").text(message).show(); //or fadeIn
+}
+</script>
+</body>
+</html>
