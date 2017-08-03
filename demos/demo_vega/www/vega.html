@@ -1,0 +1,26 @@
+<head>
+    <!-- All examples comes from https://vega.github.io/vega/examples/ -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.34/vega.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.17/vega-embed.js"></script> -->
+</head>
+<body>
+<div id="view"></div>
+<script>
+// Method 1: using vega view
+$.ajax({
+    url: "airport.vg.json",
+    success: function (data) {
+        var vegaJSONSpec = JSON.parse(data);
+        var view = new vega.View(vega.parse(vegaJSONSpec))
+          .renderer('canvas')  // set renderer (canvas or svg)
+          .initialize('#view') // initialize view within parent DOM container
+          .hover()             // enable hover encode set processing
+          .run();              // run the dataflow and render the view
+    }
+});
+
+//  Method 2: using vega embed
+// vega.embed('#view', 'https://vega.github.io/vega/examples/bar-chart.vg.json');
+</script>
+</body>
