@@ -3,40 +3,66 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	"net/url"
+	"io/ioutil"
+	"net/http"
 	"os"
+	"regexp"
 	"strings"
+
+	"github.com/axgle/mahonia"
 )
 
 func main() {
-	var argIds, argURL string
-	var ids []string
-
+	var argIds, argURL, argSfx, argFile string
+	var argGBK bool
 	flag.StringVar(&argIds, "ids", "", "Comma separated list of ids, like `11,31,51`. Each joined after the given `--url`.")
 	flag.StringVar(&argURL, "url", "cn163.net/archives/", "URL of the site without `http://`. `cn163.net/archives/` by default.")
+	flag.StringVar(&argSfx, "sfx", ".html", "Subfix of the url. `.html` by default.")
+	flag.StringVar(&argFile, "o", "list.txt", "The output file. `list.txt` by default.")
+	flag.BoolVar(&argGBK, "gbk", false, "If output as GBK encoding.")
+
 	flag.Parse()
 	if flag.NFlag() == 0 {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
 
-	ids = strings.Split(argIds, ",")
+	f, _ := os.Create(argFile)
+	defer f.Close()
 
+	re := regexp.MustCompile(`ed2k:\/\/\|file\|[^\<\>\|\\\/]+\|\d+\|[0-9a-zA-Z]{32}\|h=[a-z0-9]+\|\/`)
+	enc := mahonia.NewEncoder("GBK")
+	ids := strings.Split(argIds, ",")
 	for _, id := range ids {
-		link := "http://" + argURL + id
-		doc, err := goquery.NewDocument(link)
+		link := "http://" + argURL + id + argSfx
+		// doc, err := goquery.NewDocument(link)
+		resp, err := http.Get(link)
 		if err != nil {
 			fmt.Println("Cannot open url")
 			os.Exit(2)
 		}
+		defer resp.Body.Close()
+		ret, err := ioutil.ReadAll(resp.Body)
 
-		doc.Find("a").Each(func(i int, s *goquery.Selection) {
-			href := s.AttrOr("href", "")
-			if strings.HasPrefix(href, "ed2k://") {
-				uu, _ := url.QueryUnescape(href)
-				fmt.Println(uu)
+		res := re.FindAllString(string(ret), -1)
+		tmp := ""
+		for _, u := range res {
+			if u == tmp {
+				continue
 			}
-		})
+			tmp = u
+			if argGBK {
+				u = enc.ConvertString(u)
+			}
+			fmt.Fprintln(f, u)
+		}
+
+		// doc.Find("a").Each(func(i int, s *goquery.Selection) {
+		// 	href := s.AttrOr("href", "")
+		// 	if strings.HasPrefix(href, "ed2k://") {
+		// 		uu, _ := url.QueryUnescape(href)
+		// 		fmt.Println(uu)
+		// 	}
+		// })
 	}
 }
