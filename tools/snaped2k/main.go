@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -16,7 +17,7 @@ func main() {
 	var argIds, argURL, argSfx, argFile string
 	var argGBK bool
 	flag.StringVar(&argIds, "ids", "", "Comma separated list of ids, like `11,31,51`. Each joined after the given `--url`.")
-	flag.StringVar(&argURL, "url", "cn163.net/archives/", "URL of the site without `http://`. `cn163.net/archives/` by default.")
+	flag.StringVar(&argURL, "url", "cu163.com/", "URL of the site without `http://`. `cu163.com/` by default.")
 	flag.StringVar(&argSfx, "sfx", ".html", "Subfix of the url. `.html` by default.")
 	flag.StringVar(&argFile, "o", "list.txt", "The output file. `list.txt` by default.")
 	flag.BoolVar(&argGBK, "gbk", false, "If output as GBK encoding.")
@@ -51,6 +52,7 @@ func main() {
 				continue
 			}
 			tmp = u
+			u, _ := url.QueryUnescape(u)
 			if argGBK {
 				u = enc.ConvertString(u)
 			}
